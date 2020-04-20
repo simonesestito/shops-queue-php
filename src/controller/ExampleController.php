@@ -19,4 +19,6 @@ class ExampleController extends BaseController {
     }
 }
 
-registerController(ExampleController::class);
+onInit(function() {
+    registerController(ExampleController::class);
+});
