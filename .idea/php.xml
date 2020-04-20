@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="PhpAnalysisConfiguration">
+    <unchecked_exceptions>
+      <fqn value="\AppHttpException" />
+      <fqn value="\Error" />
+      <fqn value="\LogicException" />
+      <fqn value="\ReflectionException" />
+      <fqn value="\RuntimeException" />
+    </unchecked_exceptions>
+  </component>
   <component name="PhpInterpreters">
     <interpreters>
       <interpreter id="5481b906-ad48-49c0-9fa4-f89433e55da1" name="Ubuntu" home="wsl://DATA" debugger_id="php.debugger.XDebug">
@@ -59,4 +68,5 @@
       </interpreter>
     </phpInfoCache>
   </component>
+  <component name="PhpProjectSharedConfiguration" php_language_level="7" />
 </project>
