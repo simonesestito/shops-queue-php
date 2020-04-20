@@ -10,27 +10,27 @@ $_instancesCache = [];
  * @param $name string Class name
  */
 function getInstanceOf($name) {
-  global $_instancesCache;
+    global $_instancesCache;
 
-  if (isset($_instancesCache[$name]))
-    return $_instancesCache[$name];
+    if (isset($_instancesCache[$name]))
+        return $_instancesCache[$name];
 
-  $class = new ReflectionClass($name);
-  $constr = $class->getConstructor();
-  $params = [];
+    $class = new ReflectionClass($name);
+    $constr = $class->getConstructor();
+    $params = [];
 
-  if ($constr != NULL)
-    $params = $constr->getParameters();
+    if ($constr != NULL)
+        $params = $constr->getParameters();
 
-  $paramValues = [];
-  foreach ($params as $param) {
-    $paramClass = $param->getClass()->name;
-    array_push($paramValues, getInstanceOf($paramClass));
-  }
-  $instance = $class->newInstanceArgs($paramValues);
+    $paramValues = [];
+    foreach ($params as $param) {
+        $paramClass = $param->getClass()->name;
+        array_push($paramValues, getInstanceOf($paramClass));
+    }
+    $instance = $class->newInstanceArgs($paramValues);
 
-  $_instancesCache[$name] = $instance;
-  return $instance;
+    $_instancesCache[$name] = $instance;
+    return $instance;
 }
 
 /**
@@ -41,6 +41,6 @@ function getInstanceOf($name) {
  * @param $object object Instance of the given class
  */
 function provideInstance($class, $object) {
-  global $_instancesCache;
-  $_instancesCache[$class] = $object;
+    global $_instancesCache;
+    $_instancesCache[$class] = $object;
 }
