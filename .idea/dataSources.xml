@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="shops_queue@localhost" uuid="3f68cd39-38b7-40d1-8db3-f364fe53a132">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://localhost:3306/shops_queue</jdbc-url>
+      <driver-properties>
+        <property name="serverTimezone" value="UTC" />
+      </driver-properties>
+    </data-source>
+  </component>
+</project>
