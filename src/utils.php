@@ -17,22 +17,25 @@ function onInit($callback) {
  * Require every file in a directory, recursively.
  * After importing all the files, all callbacks registered with onInit() will be fired.
  * @param $path string Directory to import
+ * @param $isRecursive bool Flag to detect if this requireAll() call is recursive
  */
-function requireAll($path = __DIR__) {
+function requireAll(string $path = __DIR__, bool $isRecursive = false) {
     global $_onInitCallbacks;
     $scan = glob("$path/*");
-    foreach ($scan as $path) {
-        if (preg_match('/\.php$/', $path)) {
+    foreach ($scan as $file) {
+        if (preg_match('/\.php$/', $file)) {
             /** @noinspection PhpIncludeInspection */
-            require_once $path;
-        } elseif (is_dir($path)) {
-            requireAll($path);
+            require_once $file;
+        } elseif (is_dir($file)) {
+            requireAll($file, true);
         }
     }
 
-    foreach ($_onInitCallbacks as $callback) {
-        // Fire all the callbacks after imports
-        call_user_func($callback);
+    if (!$isRecursive) {
+        foreach ($_onInitCallbacks as $callback) {
+            // Fire all the callbacks after imports
+            call_user_func($callback);
+        }
+        $_onInitCallbacks = [];
     }
-    $_onInitCallbacks = [];
 }
