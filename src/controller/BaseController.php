@@ -18,7 +18,7 @@ abstract class BaseController {
      * It takes HTTP method and body from superglobal variables
      * @param $subUrl string URL after the controller's base URL
      * @return object Object to return to the client
-     * @throws AppHttpException
+     * @throws Exception
      */
     public function handleRequest($subUrl) {
         $httpMethod = $_SERVER['REQUEST_METHOD'];
@@ -39,7 +39,7 @@ abstract class BaseController {
                 $subUrlSegment = $subUrlSegments[$i];
                 $routeSegment = $routeSegments[$i];
 
-                if ($routeSegment[0] === ':') {
+                if (@$routeSegment[0] === ':') {
                     // This segment is a parameter
                     $urlParams[] = $subUrlSegment;
                 } elseif ($routeSegment !== $subUrlSegment) {
