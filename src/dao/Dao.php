@@ -24,6 +24,7 @@ class Dao {
      * and handles known MySQL errno
      * @param string $query SQL query
      * @param mixed[] $params Params to bind to the query
+     * @return array|int Array of found records, or ID of latest INSERT
      * @throws DuplicateEntityException
      */
     protected function query(string $query, array $params = []) {
@@ -40,15 +41,21 @@ class Dao {
                 elseif (is_double($param))
                     $types .= 'd';
                 else
-                    throw new RuntimeException('Unknown type for ' . $param);
+                    throw new RuntimeException("Unknown type for '$param'");
             }
 
             $statement->bind_param($types, ...$params);
         }
 
         $success = $statement->execute();
-        if ($success)
-            return; // Everything is fine.
+        if ($success) {
+            // Return the result
+            $result = $statement->get_result();
+            if ($result)
+                return $result->fetch_all(MYSQLI_ASSOC);
+            else
+                return $statement->insert_id;
+        }
 
         $errno = $statement->errno;
         if ($errno === MYSQL_DUPLICATE_ERROR) {
