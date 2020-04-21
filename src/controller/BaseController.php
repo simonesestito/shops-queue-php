@@ -72,7 +72,13 @@ abstract class BaseController {
                 $model = $modelClass->newInstance($body);
                 $urlParams[] = $model;
             }
-            return $method->invokeArgs($this, $urlParams);
+
+            $result = $method->invokeArgs($this, $urlParams);
+            if ($result == null) {
+                // Use empty object instead of null value
+                $result = json_decode('{}');
+            }
+            return $result;
         }
 
         throw new AppHttpException(HTTP_NOT_FOUND);
