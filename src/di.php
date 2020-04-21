@@ -8,6 +8,7 @@ $_instancesCache = [];
  * It injects all the dependencies required in the constructor.
  * NOTE: The constructor must use types on parameters!
  * @param $name string Class name
+ * @return object Instance of the given class
  */
 function getInstanceOf($name) {
     global $_instancesCache;
@@ -35,7 +36,7 @@ function getInstanceOf($name) {
 
 /**
  * Provide an instance of a class instead of
- * creating it from costructor injection.
+ * creating it from constructor injection.
  *
  * @param $class string Class name of the object
  * @param $object object Instance of the given class
