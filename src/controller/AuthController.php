@@ -18,9 +18,14 @@ class AuthController extends BaseController {
         return '/auth';
     }
 
-    public function signupUser(NewUser $newUser) {
+    public function signupUser(NewUser $newUser): AuthResponse {
         $this->userDao->insertNewUser($newUser);
-        // TODO Login and return
+
+        // Login immediately after sign up
+        return $this->login(new UserLogin([
+            'email' => $newUser->email,
+            'password' => $newUser->password,
+        ]));
     }
 
     public function login(UserLogin $userLogin): AuthResponse {
