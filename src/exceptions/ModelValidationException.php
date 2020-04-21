@@ -1,6 +1,5 @@
 <?php
 
-
 class ModelValidationException extends Exception {
     private $field;
 

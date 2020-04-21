@@ -75,13 +75,13 @@ abstract class BaseController {
                 }
                 return $method->invokeArgs($this, $urlParams);
             } catch (Exception $e) {
-                if ($e instanceof AppHttpException)
+                if ($e instanceof AppHttpException) {
                     throw $e;
-                elseif ($e instanceof ModelValidationException)
-                    // TODO Show error info
-                    throw new AppHttpException(HTTP_BAD_REQUEST);
-                else
+                } elseif ($e instanceof ModelValidationException) {
+                    throw new AppHttpException(HTTP_BAD_REQUEST, $e);
+                } else {
                     throw new AppHttpException(HTTP_SERVER_ERROR, $e);
+                }
             }
         }
 

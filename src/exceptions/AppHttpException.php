@@ -11,14 +11,9 @@ define('HTTP_SERVER_ERROR', 500);
 class AppHttpException extends Exception {
     private $httpStatus;
 
-    // TODO: Accept an error object to output
     public function __construct(int $httpStatus, Throwable $previous = null) {
-        if ($previous == null) {
-            parent::__construct('', 0, null);
-        } else {
-            parent::__construct($previous->getMessage(), $previous->getCode(), $previous);
-        }
-
+        $message = $previous == null ? '' : $previous->getMessage();
+        parent::__construct($message, 0, $previous);
         $this->httpStatus = $httpStatus;
     }
 
