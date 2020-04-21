@@ -63,26 +63,16 @@ abstract class BaseController {
             }
 
             // Checks passed.
-            try {
-                $class = new ReflectionClass($this);
-                $method = $class->getMethod($registeredRoute['methodName']);
-                $methodParams = $method->getParameters();
-                if (count($methodParams) === count($urlParams) + 1) {
-                    $body = json_decode(file_get_contents('php://input'), true);
-                    $modelClass = $methodParams[count($methodParams) - 1]->getClass();
-                    $model = $modelClass->newInstance($body);
-                    $urlParams[] = $model;
-                }
-                return $method->invokeArgs($this, $urlParams);
-            } catch (Exception $e) {
-                if ($e instanceof AppHttpException) {
-                    throw $e;
-                } elseif ($e instanceof ModelValidationException) {
-                    throw new AppHttpException(HTTP_BAD_REQUEST, $e);
-                } else {
-                    throw new AppHttpException(HTTP_SERVER_ERROR, $e);
-                }
+            $class = new ReflectionClass($this);
+            $method = $class->getMethod($registeredRoute['methodName']);
+            $methodParams = $method->getParameters();
+            if (count($methodParams) === count($urlParams) + 1) {
+                $body = json_decode(file_get_contents('php://input'), true);
+                $modelClass = $methodParams[count($methodParams) - 1]->getClass();
+                $model = $modelClass->newInstance($body);
+                $urlParams[] = $model;
             }
+            return $method->invokeArgs($this, $urlParams);
         }
 
         throw new AppHttpException(HTTP_NOT_FOUND);

@@ -5,7 +5,7 @@ requireAll();
 // TODO Add auth
 
 // Get path without trailing /
-$path = rtrim($_SERVER['PATH_INFO'], '/');
+$path = isset($_SERVER['PATH_INFO']) ? rtrim($_SERVER['PATH_INFO'], '/') : '';
 
 header('Content-Type: application/json');
 
@@ -18,11 +18,8 @@ try {
 
     $result = $controller->handleRequest($subUrl);
     echo json_encode($result);
-} catch (AppHttpException $e) {
-    http_response_code($e->getHttpStatus());
-    echo json_encode([
-        'error' => true,
-        'code' => $e->getHttpStatus(),
-        'message' => $e->getMessage(),
-    ]);
+} catch (Exception $e) {
+    $appException = AppHttpException::fromException($e);
+    http_response_code($appException->getHttpStatus());
+    echo json_encode($appException->getErrorObject());
 }
