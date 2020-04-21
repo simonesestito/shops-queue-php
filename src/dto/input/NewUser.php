@@ -2,8 +2,10 @@
 
 
 class NewUser {
+    public $name;
+    public $surname;
     public $email;
-    public $nome;
+    public $password;
 
     /**
      * NewUser constructor.
@@ -15,11 +17,15 @@ class NewUser {
         /** @var $validator Validator */
         $validator = getInstanceOf(Validator::class);
         $validator->validate([
+            'name' => 'is_string',
+            'surname' => 'is_string',
             'email' => Validator::isEmailAddress(),
-            'nome' => Validator::optional('is_string'),
+            'password' => 'is_string',
         ], $rawArray);
 
+        $this->name = $rawArray['name'];
+        $this->surname = $rawArray['surname'];
         $this->email = strtolower($rawArray['email']);
-        $this->nome = $rawArray['nome'];
+        $this->password = $rawArray['password'];
     }
 }
