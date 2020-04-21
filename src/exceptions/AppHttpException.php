@@ -32,6 +32,8 @@ class AppHttpException extends Exception {
             $status = HTTP_BAD_REQUEST;
         elseif ($e instanceof DuplicateEntityException)
             $status = HTTP_CONFLICT;
+        elseif ($e instanceof LoginException)
+            $status = HTTP_NOT_LOGGED_IN;
         else
             $status = HTTP_SERVER_ERROR;
 
