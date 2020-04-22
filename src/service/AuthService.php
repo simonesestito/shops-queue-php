@@ -47,6 +47,27 @@ class AuthService {
     }
 
     /**
+     * Create an auth context based on the given access token
+     * It should be assigned to <code>$GLOBAL['auth'];</code>
+     * @param string|null $accessToken
+     * @return array|null Auth context
+     */
+    public function createAuthContext($accessToken) {
+        if (is_null($accessToken)) {
+            return null;
+        }
+
+        // Validate access token
+        $sessionInfo = $this->sessionDao->getSessionByAccessToken($accessToken);
+        if ($sessionInfo == null) {
+            // Invalid access token
+            return null;
+        }
+
+        return $sessionInfo;
+    }
+
+    /**
      * Generate a new token.
      * It uses cryptographically secure pseudo-random functions.
      * @param int $bits Number of random bits. It must be a multiple of 8
@@ -59,5 +80,13 @@ class AuthService {
         } catch (Exception $e) {
             throw new RuntimeException($e);
         }
+    }
+
+    public static final function getAuthContext() {
+        return $GLOBALS['auth'];
+    }
+
+    public static final function setAuthContext($authContext) {
+        $GLOBALS['auth'] = $authContext;
     }
 }
