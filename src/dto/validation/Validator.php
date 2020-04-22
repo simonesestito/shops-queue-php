@@ -23,6 +23,18 @@ class Validator {
     }
 
     /**
+     * Return a string validator with constraints on the string length
+     * @param int $min
+     * @param int $max
+     * @return callable
+     */
+    public static final function isString(int $min = 1, int $max = 255): callable {
+        return function ($value) use ($min, $max) {
+            return is_string($value) && strlen($value) >= $min && strlen($value) <= $max;
+        };
+    }
+
+    /**
      * Validate a raw array against a schema
      *
      * @param $schema callable[] Excepted data schema

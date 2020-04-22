@@ -11,10 +11,10 @@ class NewUser {
         /** @var $validator Validator */
         $validator = getInstanceOf(Validator::class);
         $validator->validate([
-            'name' => 'is_string',
-            'surname' => 'is_string',
+            'name' => Validator::isString(3),
+            'surname' => Validator::isString(3),
             'email' => Validator::isEmailAddress(),
-            'password' => 'is_string',
+            'password' => Validator::isString(8),
         ], $rawArray);
 
         $this->name = $rawArray['name'];
