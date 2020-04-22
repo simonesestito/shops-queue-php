@@ -5,10 +5,10 @@
  */
 class AuthResponse {
     public $user;
-    public $tokens;
+    public $accessToken;
 
-    public function __construct(User $user, UserTokens $userTokens) {
+    public function __construct(User $user, string $accessToken) {
         $this->user = $user;
-        $this->tokens = $userTokens;
+        $this->accessToken = $accessToken;
     }
 }

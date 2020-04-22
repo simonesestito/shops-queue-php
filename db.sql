@@ -59,16 +59,12 @@ CREATE TABLE Booking
 DROP TABLE IF EXISTS Session;
 CREATE TABLE Session
 (
-    id                     INT         NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    userId                 INT         NOT NULL,
-    accessToken            VARCHAR(24) NOT NULL,
-    accessTokenExpiration  DATETIME    NOT NULL,
-    refreshToken           VARCHAR(44) NOT NULL,
-    refreshTokenExpiration DATETIME    NOT NULL,
+    id          INT         NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    userId      INT         NOT NULL,
+    accessToken VARCHAR(44) NOT NULL,
     -- Ensure a token cannot be used by more than 1 user,
     -- even if that's almost impossible, but not 100% impossible
     UNIQUE (accessToken),
-    UNIQUE (refreshToken),
     FOREIGN KEY (userId) REFERENCES User (id)
 );
 
