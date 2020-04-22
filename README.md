@@ -34,7 +34,7 @@ A user on this platform can cover different roles:
 
 ### User
 
-A user is required to sign up to use the platform.
+A user must sign up to use the platform.
 
 He can discover all the shops nearby which use this system to manage queues. Of course, shops can be found by their name or address too.
 
@@ -74,17 +74,17 @@ Each controller must register itself to the Controller container.
 
 A Controller communicates with a Service, which is responsible for handling a more complex business logic. In case using a Service may be redundant, a controller directly interacts with a DAO.
 
-A DAO (Data Access Object), as the name implies, it's an object which allows to access data of a specific database table, joining other tables when required.
+A DAO (Data Access Object), as the name implies, it's an object which allows accessing data of a specific database table, joining other tables when required.
 
 DTOs (Data Transfer Object) represent the data structure of all inputs and outputs of the endpoints.
 
-The main entrypoint is the `index.php` file. It is responsible for doing all the wrap up logic. It finds the most appropriate Controller, invokes the specific method and sends the response out.
+The main entry point is the `index.php` file. It is responsible for doing all the wrap up logic. It finds the most appropriate Controller, invokes the specific method and sends the response out.
 
-A custom-made Dependecy Injection system is also included, which uses PHP reflection, to instantiate classes quickly and easily.
+A custom-made Dependency Injection system has also been included, which uses PHP reflection, to instantiate classes quickly and easily.
 
 ### Folder structure
 
-Some files or folders may be omitted
+Some files or folders may have been omitted
 
 - **db.sql** (MySQL DDL file)
 - **src** (PHP source files)
