@@ -3,16 +3,14 @@
 
 class UserDao extends Dao {
     /**
-     * Insert a new user account
+     * Insert a new user account (role = USER)
      * @param NewUser $newUser
-     * @param string $role One of the known user roles
-     * @param int|null $shopId If role is OWNER
      */
-    public function insertNewUser(NewUser $newUser, string $role, int $shopId = null) {
+    public function insertNewUser(NewUser $newUser) {
         // Find the ID of the given role
-        $roles = $this->query("SELECT * FROM Role WHERE name = ?", [$role]);
+        $roles = $this->query("SELECT * FROM Role WHERE name = 'USER'");
         if (empty($roles)) {
-            throw new RuntimeException("Unknown role: $role");
+            throw new RuntimeException("Unable to find USER role");
         }
         $roleId = $roles[0]['id'];
 
@@ -24,12 +22,34 @@ class UserDao extends Dao {
             $roleId
         ];
 
-        if ($shopId == null) {
-            $sql = "INSERT INTO User (name, surname, email, password, roleId) VALUES (?, ?, ?, ?, ?)";
-        } else {
-            $sql = "INSERT INTO User (name, surname, email, password, roleId, shopId) VALUES (?, ?, ?, ?, ?, ?)";
-            $params[] = $shopId;
+        $sql = "INSERT INTO User (name, surname, email, password, roleId) VALUES (?, ?, ?, ?, ?)";
+
+        $this->query($sql, $params);
+    }
+
+    /**
+     * Insert a new shop owner
+     * @param NewUser $newUser
+     * @param int $shopId
+     */
+    public function insertShopOwner(NewUser $newUser, int $shopId) {
+        // Find the ID of the given role
+        $roles = $this->query("SELECT * FROM Role WHERE name = 'OWNER'");
+        if (empty($roles)) {
+            throw new RuntimeException("Unable to find OWNER role");
         }
+        $roleId = $roles[0]['id'];
+
+        $params = [
+            $newUser->name,
+            $newUser->surname,
+            $newUser->email,
+            password_hash($newUser->password, PASSWORD_BCRYPT),
+            $roleId,
+            $shopId
+        ];
+
+        $sql = "INSERT INTO User (name, surname, email, password, roleId, shopId) VALUES (?, ?, ?, ?, ?, ?)";
 
         $this->query($sql, $params);
     }

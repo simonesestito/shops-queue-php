@@ -5,7 +5,7 @@ class UserLogin {
     public $email;
     public $password;
 
-    public function __construct(array $rawArray) {
+    public function __construct($rawArray) {
         /** @var $validator Validator */
         $validator = getInstanceOf(Validator::class);
         $validator->validate([

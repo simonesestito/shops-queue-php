@@ -35,6 +35,23 @@ class Validator {
     }
 
     /**
+     * Return an associative array validator
+     * @param Validator $validator
+     * @param $schema
+     * @return callable
+     */
+    public static final function isSchema(Validator $validator, $schema): callable {
+        return function ($value) use ($validator, $schema) {
+            try {
+                $validator->validate($schema, $value);
+                return true;
+            } catch (ModelValidationException $e) {
+                return false;
+            }
+        };
+    }
+
+    /**
      * Validate a raw array against a schema
      *
      * @param $schema callable[] Excepted data schema
@@ -42,6 +59,9 @@ class Validator {
      * @throws ModelValidationException
      */
     public function validate($schema, $data) {
+        if ($data == null)
+            throw new ModelValidationException('root');
+
         foreach ($schema as $field => $validator) {
             $value = @$data[$field];
             if (!call_user_func($validator, $value)) {
