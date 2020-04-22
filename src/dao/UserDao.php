@@ -3,17 +3,35 @@
 
 class UserDao extends Dao {
     /**
-     * Insert a new user
+     * Insert a new user account
      * @param NewUser $newUser
-     * @throws DuplicateEntityException
+     * @param string $role One of the known user roles
+     * @param int|null $shopId If role is OWNER
      */
-    public function insertNewUser(NewUser $newUser) {
-        $this->query("INSERT INTO User (name, surname, email, password) VALUES (?, ?, ?, ?)", [
-            $this->sanitize($newUser->name),
-            $this->sanitize($newUser->surname),
-            $this->sanitize($newUser->email),
-            $this->sanitize(password_hash($newUser->password, PASSWORD_BCRYPT))
-        ]);
+    public function insertNewUser(NewUser $newUser, string $role, int $shopId = null) {
+        // Find the ID of the given role
+        $roles = $this->query("SELECT * FROM Role WHERE name = ?", [$role]);
+        if (empty($roles)) {
+            throw new RuntimeException("Unknown role: $role");
+        }
+        $roleId = $roles[0]['id'];
+
+        $params = [
+            $newUser->name,
+            $newUser->surname,
+            $newUser->email,
+            password_hash($newUser->password, PASSWORD_BCRYPT),
+            $roleId
+        ];
+
+        if ($shopId == null) {
+            $sql = "INSERT INTO User (name, surname, email, password, roleId) VALUES (?, ?, ?, ?, ?)";
+        } else {
+            $sql = "INSERT INTO User (name, surname, email, password, roleId, shopId) VALUES (?, ?, ?, ?, ?, ?)";
+            $params[] = $shopId;
+        }
+
+        $this->query($sql, $params);
     }
 
     /**
