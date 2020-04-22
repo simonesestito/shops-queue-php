@@ -27,10 +27,20 @@ class UserDao extends Dao {
                 WHERE User.roleId = Role.id
                 AND email = ?";
         $records = $this->query($sql, [$email]);
-        if (empty($records)) {
-            return null;
-        } else {
-            return $records[0];
-        }
+        return @$records[0];
+    }
+
+    /**
+     * Find a user by ID
+     * @param int $id
+     * @return array|null Single associative array
+     */
+    public function getUserById(int $id) {
+        $sql = "SELECT User.*, Role.name AS roleName
+                FROM User, Role
+                WHERE User.roleId = Role.id
+                AND User.id = ?";
+        $records = $this->query($sql, [$id]);
+        return @$records[0];
     }
 }
