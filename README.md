@@ -51,7 +51,8 @@ After that, he can manage the queue of his shop and call the next customer.
 ### Administrator
 
 An administrator can manage all accounts (both users and shop owners) and all shops.
- 
+
+
 <a name="endpoints"></a>
 ## REST endpoints
 
@@ -60,9 +61,9 @@ An administrator can manage all accounts (both users and shop owners) and all sh
 <a name="architecture"></a>
 ## Architecture
 
-This project is organized according to the following diagram:
+This project has been organized according to the following diagram:
 
-**TODO: add architecture diagram**
+![Architecture diagram](https://github.com/simonesestito/shops-queue-php/blob/master/graphics/architecture.png?raw=true)
 
 A Controller receives a request for a specific base URI.
 Each of its methods can be registered to listen on a more specific endpoint. A method can, and often should, return an object. It'll be transformed to JSON and sent to the client.
