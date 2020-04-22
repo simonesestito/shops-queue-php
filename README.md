@@ -56,7 +56,9 @@ An administrator can manage all accounts (both users and shop owners) and all sh
 <a name="endpoints"></a>
 ## REST endpoints
 
-**TODO: Add Postman collection**
+A full API documentation, complete with examples, can be found on Postman:
+
+[![API documentation on Postman](https://run.pstmn.io/button.svg)](https://documenter.getpostman.com/view/11169543/Szf9URou?version=latest)
 
 <a name="architecture"></a>
 ## Architecture
