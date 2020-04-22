@@ -13,7 +13,6 @@ class AuthController extends BaseController {
 
         $this->registerRoute('/signup', 'POST', null, 'signupUser');
         $this->registerRoute('/login', 'POST', null, 'login');
-        $this->registerRoute('/test', 'GET', '*', 'testLogin');
     }
 
     public static function getBaseUrl(): string {
@@ -32,12 +31,6 @@ class AuthController extends BaseController {
 
     public function login(UserLogin $userLogin): AuthResponse {
         return $this->authService->login($userLogin);
-    }
-
-    public function testLogin(): User {
-        $userId = $GLOBALS['auth']['id'];
-        $dbUser = $this->userDao->getUserById($userId);
-        return User::fromEntity($dbUser);
     }
 }
 
