@@ -68,6 +68,16 @@ class AuthService {
     }
 
     /**
+     * Invalidate the given session with both access and refresh tokens.
+     * It doesn't throw if the session doesn't exist.
+     * @param $accessToken string Access token for the session to invalidate
+     */
+    public function logout(string $accessToken) {
+        $this->sessionDao->removeSessionByAccessToken($accessToken);
+    }
+
+
+    /**
      * Generate a new token.
      * It uses cryptographically secure pseudo-random functions.
      * @param int $bits Number of random bits. It must be a multiple of 8

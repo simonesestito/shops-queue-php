@@ -26,12 +26,20 @@ class SessionDao extends Dao {
      */
     public function getSessionByAccessToken(string $accessToken) {
         $sql = "SELECT User.*,
-                Role.name AS role
+                       Role.name AS role,
+                       Session.accessToken,
+                       Session.refreshToken,
+                       Session.accessTokenExpiration,
+                       Session.refreshTokenExpiration
                 FROM Session
                 JOIN User on Session.userId = User.id
                 JOIN Role on User.roleId = Role.id
                 WHERE accessToken = ? AND accessTokenExpiration > CURRENT_DATE()";
         $records = $this->query($sql, [$accessToken]);
         return @$records[0];
+    }
+
+    public function removeSessionByAccessToken(string $accessToken) {
+        $this->query("DELETE FROM Session WHERE accessToken = ?", [$accessToken]);
     }
 }

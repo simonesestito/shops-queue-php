@@ -13,6 +13,7 @@ class AuthController extends BaseController {
 
         $this->registerRoute('/signup', 'POST', null, 'signupUser');
         $this->registerRoute('/login', 'POST', null, 'login');
+        $this->registerRoute('/logout', 'GET', '*', 'logout');
     }
 
     public static function getBaseUrl(): string {
@@ -31,6 +32,12 @@ class AuthController extends BaseController {
 
     public function login(UserLogin $userLogin): AuthResponse {
         return $this->authService->login($userLogin);
+    }
+
+    public function logout() {
+        // Invalidate current session
+        $accessToken = AuthService::getAuthContext()['accessToken'];
+        $this->authService->logout($accessToken);
     }
 }
 
