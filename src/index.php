@@ -2,7 +2,12 @@
 require_once __DIR__ . '/utils.php';
 requireAll();
 
-// TODO Add auth
+// Login the user
+$token = getBearerToken();
+/** @var AuthService $authService */
+$authService = getInstanceOf(AuthService::class);
+$authContext = $authService->createAuthContext($token);
+AuthService::setAuthContext($authContext);
 
 // Get path without trailing /
 $path = isset($_SERVER['PATH_INFO']) ? rtrim($_SERVER['PATH_INFO'], '/') : '';

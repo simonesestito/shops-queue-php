@@ -39,3 +39,39 @@ function requireAll(string $path = __DIR__, bool $isRecursive = false) {
         $_onInitCallbacks = [];
     }
 }
+
+/**
+ * Get the Authorization header
+ * @return string|null Authorization value
+ */
+function getAuthorizationHeader() {
+    $headers = null;
+    if (isset($_SERVER['Authorization'])) {
+        // Default
+        $headers = trim($_SERVER['Authorization']);
+    } else if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+        // Nginx
+        $headers = trim($_SERVER['HTTP_AUTHORIZATION']);
+    } elseif (function_exists('apache_request_headers')) {
+        // Apache
+        $requestHeaders = apache_request_headers();
+        if (isset($requestHeaders['Authorization'])) {
+            $headers = trim($requestHeaders['Authorization']);
+        }
+    }
+    return $headers;
+}
+
+/**
+ * Get bearer access token from Authorization header
+ * @return string|null Bearer token
+ */
+function getBearerToken() {
+    $headers = getAuthorizationHeader();
+    if (!empty($headers)) {
+        if (preg_match('/Bearer\s(\S+)/', $headers, $matches)) {
+            return $matches[1];
+        }
+    }
+    return null;
+}
