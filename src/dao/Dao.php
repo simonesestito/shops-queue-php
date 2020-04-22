@@ -10,15 +10,6 @@ class Dao {
     }
 
     /**
-     * Sanitise a given string
-     * @param string $value String to sanitise
-     * @return string Sanitised string
-     */
-    protected function sanitize(string $value): string {
-        return $this->db->real_escape_string($value);
-    }
-
-    /**
      * Execute a query.
      * It bind the given parameters,
      * and handles known MySQL errno
