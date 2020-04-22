@@ -62,9 +62,9 @@ CREATE TABLE Session
     id                     INT         NOT NULL AUTO_INCREMENT PRIMARY KEY,
     userId                 INT         NOT NULL,
     accessToken            VARCHAR(24) NOT NULL,
-    accessTokenExpiration  DATE        NOT NULL,
+    accessTokenExpiration  DATETIME    NOT NULL,
     refreshToken           VARCHAR(44) NOT NULL,
-    refreshTokenExpiration DATE        NOT NULL,
+    refreshTokenExpiration DATETIME    NOT NULL,
     -- Ensure a token cannot be used by more than 1 user,
     -- even if that's almost impossible, but not 100% impossible
     UNIQUE (accessToken),

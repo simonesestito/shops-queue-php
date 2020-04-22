@@ -14,7 +14,7 @@ class UserTokens {
      */
     public static function fromEntity(array $entity): UserTokens {
         try {
-            $now = new DateTime();
+            $now = (new DateTime())->getTimestamp();
             $accessTokenExpiration = new DateTime($entity['accessTokenExpiration']);
             $refreshTokenExpiration = new DateTime($entity['refreshTokenExpiration']);
         } catch (Exception $e) {
@@ -24,8 +24,8 @@ class UserTokens {
         $tokens = new UserTokens();
         $tokens->accessToken = $entity['accessToken'];
         $tokens->refreshToken = $entity['refreshToken'];
-        $tokens->accessTokenExpiresIn = $now->diff($accessTokenExpiration)->s;
-        $tokens->refreshTokenExpiresIn = $now->diff($refreshTokenExpiration)->s;
+        $tokens->accessTokenExpiresIn = $accessTokenExpiration->getTimestamp() - $now;
+        $tokens->refreshTokenExpiresIn = $refreshTokenExpiration->getTimestamp() - $now;
         return $tokens;
     }
 }

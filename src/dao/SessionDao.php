@@ -1,5 +1,6 @@
 <?php
 
+define('DATETIME_FORMAT', 'Y-m-d H:i:s');
 
 class SessionDao extends Dao {
     public function createNewSession(array $sessionData): array {

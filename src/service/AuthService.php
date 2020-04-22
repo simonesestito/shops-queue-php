@@ -1,8 +1,8 @@
 <?php
 
-define('ACCESS_TOKEN_EXPIRE_HOURS', 24);
+define('ACCESS_TOKEN_EXPIRE_SECONDS', 86400); // 1 day
 define('ACCESS_TOKEN_BITS_LENGTH', 128);
-define('REFRESH_TOKEN_EXPIRE_HOURS', 8760); // 1 year
+define('REFRESH_TOKEN_EXPIRE_SECONDS', 31546000); // 1 year
 define('REFRESH_TOKEN_BITS_LENGTH', 256);
 
 class AuthService {
@@ -35,9 +35,9 @@ class AuthService {
         $newSession = [
             'userId' => $userEntity['id'],
             'accessToken' => $this->generateToken(ACCESS_TOKEN_BITS_LENGTH),
-            'accessTokenExpiration' => date('Y-m-d', strtotime('+' . ACCESS_TOKEN_EXPIRE_HOURS . ' hours')),
+            'accessTokenExpiration' => date(DATETIME_FORMAT, strtotime('+' . ACCESS_TOKEN_EXPIRE_SECONDS . ' seconds')),
             'refreshToken' => $this->generateToken(REFRESH_TOKEN_BITS_LENGTH),
-            'refreshTokenExpiration' => date('Y-m-d', strtotime('+' . REFRESH_TOKEN_EXPIRE_HOURS . ' hours')),
+            'refreshTokenExpiration' => date(DATETIME_FORMAT, strtotime('+' . REFRESH_TOKEN_EXPIRE_SECONDS . ' seconds')),
         ];
         $createdSession = $this->sessionDao->createNewSession($newSession);
 
