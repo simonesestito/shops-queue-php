@@ -3,7 +3,8 @@
 
 class Shop {
     public $id;
-    public $coordinates;
+    public $longitude;
+    public $latitude;
     public $address;
     public $name;
     public $city;
@@ -16,7 +17,8 @@ class Shop {
     public static function fromEntity(array $entity): Shop {
         $shop = new Shop;
         $shop->id = $entity['id'];
-        $shop->coordinates = new Coordinates($entity['xCoordinate'], $entity['yCoordinate']);
+        $shop->latitude = $entity['latitude'];
+        $shop->longitude = $entity['longitude'];
         $shop->address = $entity['address'];
         $shop->name = $entity['name'];
         $shop->city = $entity['city'];

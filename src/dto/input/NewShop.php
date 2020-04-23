@@ -2,7 +2,8 @@
 
 
 class NewShop {
-    public $coordinates;
+    public $latitude;
+    public $longitude;
     public $address;
     public $name;
     public $city;
@@ -14,26 +15,23 @@ class NewShop {
             'address' => Validator::isString(3),
             'name' => Validator::isString(3),
             'city' => Validator::isString(3),
-            'coordinates' => Validator::isSchema($validator, [
-                'x' => 'is_float',
-                'y' => 'is_float',
-            ])
+            'latitude' => 'is_float',
+            'longitude' => 'is_float',
         ], $rawArray);
 
         $this->name = $rawArray['name'];
         $this->address = $rawArray['address'];
         $this->city = $rawArray['city'];
-        $this->coordinates = new Coordinates(
-            $rawArray['coordinates']['x'],
-            $rawArray['coordinates']['y']
-        );
+        $this->latitude = $rawArray['latitude'];
+        $this->longitude = $rawArray['longitude'];
     }
 
 
     public function toShop(int $id): Shop {
         $shop = new Shop;
         $shop->id = $id;
-        $shop->coordinates = $this->coordinates;
+        $shop->longitude = $this->longitude;
+        $shop->latitude = $this->latitude;
         $shop->address = $this->address;
         $shop->name = $this->name;
         $shop->city = $this->city;

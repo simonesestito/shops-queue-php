@@ -12,9 +12,9 @@ class ShopDao extends Dao {
      * @return int New record's ID
      */
     public function insertNewShop(NewShop $newShop): int {
-        return $this->query("INSERT INTO Shop (xCoordinate, yCoordinate, address, name, city) VALUES (?, ?, ?, ?, ?)", [
-            $newShop->coordinates->x,
-            $newShop->coordinates->y,
+        return $this->query("INSERT INTO Shop (latitude, longitude, address, name, city) VALUES (?, ?, ?, ?, ?)", [
+            $newShop->latitude,
+            $newShop->longitude,
             $newShop->address,
             $newShop->name,
             $newShop->city

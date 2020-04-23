@@ -16,13 +16,13 @@ VALUES (1, 'USER'),
 DROP TABLE IF EXISTS Shop;
 CREATE TABLE Shop
 (
-    id          INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id        INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,
     -- https://developers.google.com/maps/solutions/store-locator/clothing-store-locator#creating-a-table-in-mysql
-    xCoordinate FLOAT(10, 6) NOT NULL,
-    yCoordinate FLOAT(10, 6) NOT NULL,
-    address     VARCHAR(255) NOT NULL,
-    name        VARCHAR(255) NOT NULL,
-    city        VARCHAR(255) NOT NULL
+    latitude  FLOAT(10, 6) NOT NULL,
+    longitude FLOAT(10, 6) NOT NULL,
+    address   VARCHAR(255) NOT NULL,
+    name      VARCHAR(255) NOT NULL,
+    city      VARCHAR(255) NOT NULL
 );
 
 DROP TABLE IF EXISTS User;
