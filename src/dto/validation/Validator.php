@@ -13,12 +13,14 @@ class Validator {
     }
 
     /**
-     * Return an email validator
+     * Return a validator which checks if a value is valid against a filter.
+     * @link https://php.net/manual/en/filter.constants.php
+     * @param $filter int One of the filters of FILTER_VALIDATE_*
      * @return callable
      */
-    public static final function isEmailAddress(): callable {
-        return function ($value) {
-            return is_string($value) && filter_var($value, FILTER_VALIDATE_EMAIL);
+    public static function filterAs($filter): callable {
+        return function ($value) use ($filter) {
+            return filter_var($value, $filter) !== false;
         };
     }
 

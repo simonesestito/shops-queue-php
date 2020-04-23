@@ -13,7 +13,7 @@ class NewUser {
         $validator->validate([
             'name' => Validator::isString(3),
             'surname' => Validator::isString(3),
-            'email' => Validator::isEmailAddress(),
+            'email' => Validator::filterAs(FILTER_VALIDATE_EMAIL),
             'password' => Validator::isString(8),
         ], $rawArray);
 

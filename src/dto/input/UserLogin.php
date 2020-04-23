@@ -9,7 +9,7 @@ class UserLogin {
         /** @var $validator Validator */
         $validator = getInstanceOf(Validator::class);
         $validator->validate([
-            'email' => Validator::isEmailAddress(),
+            'email' => Validator::filterAs(FILTER_VALIDATE_EMAIL),
             'password' => 'is_string',
         ], $rawArray);
 
