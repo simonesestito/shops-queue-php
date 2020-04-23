@@ -26,27 +26,33 @@ class ShopDao extends Dao {
     }
 
     /**
-     * Find shops near the user's location, ordered by ascending distance
-     *
-     * Distance in KM is calculated according to:
-     * @link https://developers.google.com/maps/solutions/store-locator/clothing-store-locator#findnearsql
+     * Find shops near the user's location, ordered by ascending distance.
+     * Distance in KM is calculated using user-defined DISTANCE_KM function.
+     * It returns both the data found and the total number of items available.
+     * @link https://dev.mysql.com/doc/refman/8.0/en/information-functions.html#function_found-rows
      *
      * @param float $fromLat the user's latitude
      * @param float $fromLon the user's longitude
      * @param int $offset Number of items to skip
      * @param int $limit Max number of items to return
      * @param string $query Filter by name
-     * @return array Array of shops, with a 'distance' field in KMs
+     * @return array Associative array. Key 'count' has the total rows count, 'data' has the actual result
      */
     public function findShops(float $fromLat, float $fromLon, int $offset, int $limit, string $query): array {
         $sql = "
-        SELECT *, DISTANCE_KM(?, ?, longitude, latitude) AS distance
+        SELECT SQL_CALC_FOUND_ROWS *, DISTANCE_KM(?, ?, longitude, latitude) AS distance
         FROM Shop
         WHERE name LIKE ?
         ORDER BY distance
         LIMIT ?, ?
         ";
 
-        return $this->query($sql, [$fromLon, $fromLat, "%$query%", $offset, $limit]);
+        $data = $this->query($sql, [$fromLon, $fromLat, "%$query%", $offset, $limit]);
+        $count = $this->query("SELECT FOUND_ROWS() AS c")[0]['c'];
+
+        return [
+            'data' => $data,
+            'count' => $count,
+        ];
     }
 }

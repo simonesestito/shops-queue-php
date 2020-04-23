@@ -1,6 +1,5 @@
 <?php
 
-define('PAGINATION_PAGE_SIZE', 20);
 
 /**
  * Class BaseController

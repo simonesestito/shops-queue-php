@@ -45,9 +45,9 @@ class ShopController extends BaseController {
      * - lon: the user's Y coordinate
      *
      * To search by name, you can use an additional "query" GET param.
-     * @return array Array of Shop objects
+     * @return Page Page of Shop objects
      */
-    public function findNearShops(): array {
+    public function findNearShops(): Page {
         // Validate required get params
         $this->validator->validate([
             'page' => Validator::optional(Validator::filterAs(FILTER_VALIDATE_INT)),
@@ -63,10 +63,12 @@ class ShopController extends BaseController {
 
         $offset = $page * PAGINATION_PAGE_SIZE;
 
-        $entities = $this->shopDao->findShops($lat, $lon, $offset, PAGINATION_PAGE_SIZE, $query);
-        return array_map(function ($e) {
+        $daoResult = $this->shopDao->findShops($lat, $lon, $offset, PAGINATION_PAGE_SIZE, $query);
+        $objects = array_map(function ($e) {
             return new ShopWithDistance($e);
-        }, $entities);
+        }, $daoResult['data']);
+
+        return new Page($page, $daoResult['count'], $objects);
     }
 }
 
