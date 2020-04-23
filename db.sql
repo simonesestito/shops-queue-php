@@ -42,6 +42,7 @@ CREATE TABLE User
     UNIQUE (shopId),
     UNIQUE (email),
     FOREIGN KEY (roleID) REFERENCES Role (id)
+        ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS Booking;
@@ -53,8 +54,10 @@ CREATE TABLE Booking
     createdAt DATE NOT NULL,
     -- Ensure a user can only have one booking per shop
     UNIQUE (userId, shopId),
-    FOREIGN KEY (userId) REFERENCES User (id),
+    FOREIGN KEY (userId) REFERENCES User (id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (shopId) REFERENCES Shop (id)
+        ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS Session;
@@ -67,6 +70,7 @@ CREATE TABLE Session
     -- even if that's almost impossible, but not 100% impossible
     UNIQUE (accessToken),
     FOREIGN KEY (userId) REFERENCES User (id)
+        ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 SET FOREIGN_KEY_CHECKS = 1;
