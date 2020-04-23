@@ -1,5 +1,7 @@
 <?php
 
+define('PAGINATION_PAGE_SIZE', 20);
+
 /**
  * Class BaseController
  * It represents the base controller class.
@@ -57,8 +59,10 @@ abstract class BaseController {
                     throw new AppHttpException(HTTP_NOT_LOGGED_IN);
             } elseif ($authRequired !== NULL) {
                 // Specific login required
-                if ($authRequired !== $GLOBALS['auth']['role']) {
-                    throw new AppHttpException(HTTP_NOT_AUTHORIZED);
+                $userRole = $GLOBALS['auth']['role'];
+                if ($authRequired !== $userRole) {
+                    $errorMessage = "Required role: $authRequired, detected role: $userRole";
+                    throw new AppHttpException(HTTP_NOT_AUTHORIZED, new Exception($errorMessage));
                 }
             }
 
@@ -74,7 +78,7 @@ abstract class BaseController {
             }
 
             $result = $method->invokeArgs($this, $urlParams);
-            if ($result == null) {
+            if ($result === null) {
                 // Use empty object instead of null value
                 $result = json_decode('{}');
             }
