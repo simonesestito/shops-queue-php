@@ -74,3 +74,27 @@ CREATE TABLE Session
 );
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- Apply the haversine formula to calculate
+-- the distance between 2 points on Earth in KMs
+CREATE FUNCTION DISTANCE_KM(lat0 FLOAT(10, 6),
+                            lon0 FLOAT(10, 6),
+                            lat1 FLOAT(10, 6),
+                            lon1 FLOAT(10, 6))
+    RETURNS FLOAT(10, 3)
+    DETERMINISTIC
+BEGIN
+    RETURN 6371 * acos(
+                    cos(
+                            radians(lat0)
+                        ) * cos(
+                            radians(lat1)
+                        ) * cos(
+                            radians(lon1) - radians(lon0)
+                        ) + sin(
+                                    radians(lat0)
+                                ) * sin(
+                                    radians(lat1)
+                                )
+        );
+end;
