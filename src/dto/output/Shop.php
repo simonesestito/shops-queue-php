@@ -12,16 +12,13 @@ class Shop {
     /**
      * Create an instance of Shop from a DB result
      * @param array $entity DB associative array
-     * @return Shop
      */
-    public static function fromEntity(array $entity): Shop {
-        $shop = new Shop;
-        $shop->id = $entity['id'];
-        $shop->latitude = $entity['latitude'];
-        $shop->longitude = $entity['longitude'];
-        $shop->address = $entity['address'];
-        $shop->name = $entity['name'];
-        $shop->city = $entity['city'];
-        return $shop;
+    public function __construct(array $entity) {
+        $this->id = $entity['id'];
+        $this->latitude = $entity['latitude'];
+        $this->longitude = $entity['longitude'];
+        $this->address = $entity['address'];
+        $this->name = $entity['name'];
+        $this->city = $entity['city'];
     }
 }

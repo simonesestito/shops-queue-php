@@ -28,13 +28,8 @@ class NewShop {
 
 
     public function toShop(int $id): Shop {
-        $shop = new Shop;
-        $shop->id = $id;
-        $shop->longitude = $this->longitude;
-        $shop->latitude = $this->latitude;
-        $shop->address = $this->address;
-        $shop->name = $this->name;
-        $shop->city = $this->city;
-        return $shop;
+        $toArray = json_decode(json_encode($this), true);
+        $toArray['id'] = $id;
+        return new Shop($toArray);
     }
 }

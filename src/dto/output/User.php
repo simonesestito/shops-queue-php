@@ -12,16 +12,13 @@ class User {
     /**
      * Create an instance of User from a DB result
      * @param array $entity DB associative array
-     * @return User
      */
-    public static function fromEntity(array $entity): User {
-        $user = new User();
-        $user->id = $entity['id'];
-        $user->name = $entity['name'];
-        $user->surname = $entity['surname'];
-        $user->email = $entity['email'];
-        $user->role = $entity['roleName'];
-        $user->shopId = $entity['shopId'];
-        return $user;
+    public function __construct(array $entity) {
+        $this->id = $entity['id'];
+        $this->name = $entity['name'];
+        $this->surname = $entity['surname'];
+        $this->email = $entity['email'];
+        $this->role = $entity['roleName'];
+        $this->shopId = $entity['shopId'];
     }
 }

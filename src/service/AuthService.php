@@ -35,7 +35,7 @@ class AuthService {
         ];
         $createdSession = $this->sessionDao->createNewSession($newSession);
 
-        $user = User::fromEntity($userEntity);
+        $user = new User($userEntity);
         return new AuthResponse($user, $createdSession['accessToken']);
     }
 
