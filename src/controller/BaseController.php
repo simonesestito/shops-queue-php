@@ -74,6 +74,9 @@ function handleHttpRequest($url) {
         array_push($registeredRoutes, ...$controllerRoutes);
     }
 
+    // Flag to indicate if the URL alone has been matched
+    $urlMatched = false;
+
     foreach ($registeredRoutes as $registeredRoute) {
         // Check URL analyzing every segment
         $routeUrl = $registeredRoute['url'];
@@ -97,6 +100,8 @@ function handleHttpRequest($url) {
         }
 
         // URL matched.
+        $urlMatched = true;
+
         // Check HTTP method
         if ($registeredRoute['httpMethod'] !== $httpMethod)
             continue;
@@ -140,7 +145,14 @@ function handleHttpRequest($url) {
         return $result;
     }
 
-    throw new AppHttpException(HTTP_NOT_FOUND);
+    if ($urlMatched) {
+        // URL has been matched
+        // but with a different HTTP method
+        throw new AppHttpException(HTTP_METHOD_NOT_ALLOWED);
+    } else {
+        // URL wasn't matched by any handler function
+        throw new AppHttpException(HTTP_NOT_FOUND);
+    }
 }
 
 
