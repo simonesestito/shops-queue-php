@@ -77,6 +77,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 
 -- Apply the haversine formula to calculate
 -- the distance between 2 points on Earth in KMs
+DELIMITER $$
 CREATE FUNCTION DISTANCE_KM(lat0 FLOAT(10, 6),
                             lon0 FLOAT(10, 6),
                             lat1 FLOAT(10, 6),
@@ -84,17 +85,16 @@ CREATE FUNCTION DISTANCE_KM(lat0 FLOAT(10, 6),
     RETURNS FLOAT(10, 3)
     DETERMINISTIC
 BEGIN
+    DECLARE lat1Rad FLOAT(10, 9);
+    DECLARE lat0Rad FLOAT(10, 9);
+    DECLARE deltaLon FLOAT(10, 9);
+
+    SET lat1Rad = radians(lat1);
+    SET lat0Rad = radians(lat0);
+    SET deltaLon = radians(lon1 - lon0);
+
     RETURN 6371 * acos(
-                    cos(
-                            radians(lat0)
-                        ) * cos(
-                            radians(lat1)
-                        ) * cos(
-                            radians(lon1) - radians(lon0)
-                        ) + sin(
-                                    radians(lat0)
-                                ) * sin(
-                                    radians(lat1)
-                                )
-        );
-end;
+                sin(lat0Rad) * sin(lat1Rad) +
+                cos(lat0Rad) * cos(lat1Rad) * cos(deltaLon));
+END$$
+DELIMITER ;
