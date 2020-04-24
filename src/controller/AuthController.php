@@ -11,13 +11,9 @@ class AuthController extends BaseController {
         $this->userDao = $userDao;
         $this->authService = $authService;
 
-        $this->registerRoute('/signup', 'POST', null, 'signupUser');
-        $this->registerRoute('/login', 'POST', null, 'login');
-        $this->registerRoute('/logout', 'GET', '*', 'logout');
-    }
-
-    public static function getBaseUrl(): string {
-        return '/auth';
+        $this->registerRoute('/auth/signup', 'POST', null, 'signupUser');
+        $this->registerRoute('/auth/login', 'POST', null, 'login');
+        $this->registerRoute('/auth/logout', 'GET', '*', 'logout');
     }
 
     public function signupUser(NewUser $newUser): AuthResponse {

@@ -10,8 +10,8 @@ class ShopController extends BaseController {
         $this->shopDao = $shopDao;
         $this->userDao = $userDao;
         $this->validator = $validator;
-        $this->registerRoute('', 'POST', 'ADMIN', 'addNewShop');
-        $this->registerRoute('/nearby', 'GET', '*', 'findNearShops');
+        $this->registerRoute('/shops', 'POST', 'ADMIN', 'addNewShop');
+        $this->registerRoute('/shops/nearby', 'GET', '*', 'findNearShops');
     }
 
     public static function getBaseUrl(): string {

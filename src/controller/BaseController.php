@@ -10,134 +10,137 @@ abstract class BaseController {
     private $_registeredRoutes = [];
 
     /**
-     * @return string Base URL for the given controller, without parameters
-     */
-    public abstract static function getBaseUrl(): string;
-
-    /**
-     * Handle the request on this controller instance
-     * It takes HTTP method and body from superglobal variables
-     * @param $subUrl string URL after the controller's base URL
-     * @return object Object to return to the client
-     * @throws Exception
-     */
-    public function handleRequest($subUrl) {
-        $httpMethod = $_SERVER['REQUEST_METHOD'];
-        $subUrlSegments = explode('/', $subUrl);
-        $subUrlSegmentsCount = count($subUrlSegments);
-
-        foreach ($this->_registeredRoutes as $registeredRoute) {
-            if ($registeredRoute['httpMethod'] !== $httpMethod)
-                continue;
-
-            $routeSubUrl = $registeredRoute['subUrl'];
-            $routeSegments = explode('/', $routeSubUrl);
-            if ($subUrlSegmentsCount !== count($routeSegments))
-                continue;
-
-            $urlParams = [];
-            for ($i = 0; $i < $subUrlSegmentsCount; $i++) {
-                $subUrlSegment = $subUrlSegments[$i];
-                $routeSegment = $routeSegments[$i];
-
-                if (@$routeSegment[0] === ':') {
-                    // This segment is a parameter
-                    $urlParams[] = $subUrlSegment;
-                } elseif ($routeSegment !== $subUrlSegment) {
-                    // Not matched.
-                    continue 2;
-                }
-            }
-
-            // URL matched.
-            // Check authentication
-            $authRequired = $registeredRoute['authRole'];
-            if ($authRequired === '*') {
-                // Generic login required
-                if (!isset($GLOBALS['auth']))
-                    throw new AppHttpException(HTTP_NOT_LOGGED_IN);
-            } elseif ($authRequired !== NULL) {
-                // Specific login required
-                $userRole = $GLOBALS['auth']['role'];
-                if ($authRequired !== $userRole) {
-                    $errorMessage = "Required role: $authRequired, detected role: $userRole";
-                    throw new AppHttpException(HTTP_NOT_AUTHORIZED, new Exception($errorMessage));
-                }
-            }
-
-            // Checks passed.
-            $class = new ReflectionClass($this);
-            $method = $class->getMethod($registeredRoute['methodName']);
-            $methodParams = $method->getParameters();
-            if (count($methodParams) === count($urlParams) + 1) {
-                $body = json_decode(file_get_contents('php://input'), true);
-                $modelClass = $methodParams[count($methodParams) - 1]->getClass();
-                $model = $modelClass->newInstance($body);
-                $urlParams[] = $model;
-            }
-
-            $result = $method->invokeArgs($this, $urlParams);
-            if ($result === null) {
-                // Use empty object instead of null value
-                $result = json_decode('{}');
-            }
-            return $result;
-        }
-
-        throw new AppHttpException(HTTP_NOT_FOUND);
-    }
-
-    /**
      * Register a controller method to handle a request
-     * @param $subUrl string URL after the controller's base URL
+     * @param $url string URL to match, with parameters
      * @param $httpMethod string HTTP method of the request
      * @param $authRole string Auth role required,
      *      or NULL if login isn't required,
      *      or '*' if any role is accepted
      * @param $methodName callable Name of the method to call
      */
-    protected function registerRoute($subUrl, $httpMethod, $authRole, $methodName) {
+    protected function registerRoute($url, $httpMethod, $authRole, $methodName) {
         $this->_registeredRoutes[] = [
-            'subUrl' => $subUrl,
+            'url' => $url,
             'httpMethod' => $httpMethod,
             'authRole' => $authRole,
             'methodName' => $methodName,
         ];
     }
+
+    /**
+     * Get all the registered routes.
+     * @return array Registered routes
+     */
+    public function getAllRoutes() {
+        return $this->_registeredRoutes;
+    }
 }
 
-$_controllersMap = [];
+$_controllers = [];
 
 /**
  * Register a new controller class.
  * @param $className string Name of controller class
  */
 function registerController($className) {
-    global $_controllersMap;
-    $baseUrl = (new ReflectionClass($className))
-        ->newInstanceWithoutConstructor()
-        ->getBaseUrl();
-
-    $_controllersMap[] = [
-        'className' => $className,
-        'baseUrl' => $baseUrl,
-    ];
+    global $_controllers;
+    $_controllers[] = $className;
 }
 
 /**
- * Find a Controller which matches the given URL
- * @param $url string Current URL
- * @return string Name of controller class, or NULL
- * @throws AppHttpException
+ * Handle the request on this controller instance
+ * It takes HTTP method and body from superglobal variables
+ * @param $url string URL to match
+ * @return object Returned by the handler function
  */
-function findController($url) {
-    global $_controllersMap;
+function handleHttpRequest($url) {
+    global $_controllers;
+    $httpMethod = $_SERVER['REQUEST_METHOD'];
+    $urlSegments = explode('/', $url);
+    $urlSegmentsCount = count($urlSegments);
 
-    foreach ($_controllersMap as $controller) {
-        if (strpos($url, $controller['baseUrl']) === 0) {
-            return $controller['className'];
+    // Collect all routes registered in every controller
+    $registeredRoutes = [];
+    foreach ($_controllers as $controllerClass) {
+        $controller = getInstanceOf($controllerClass);
+        $controllerRoutes = $controller->getAllRoutes();
+
+        // Add the controller to the route's info
+        $controllerRoutes = array_map(function ($route) use ($controller) {
+            $route['controller'] = $controller;
+            return $route;
+        }, $controllerRoutes);
+
+        array_push($registeredRoutes, ...$controllerRoutes);
+    }
+
+    foreach ($registeredRoutes as $registeredRoute) {
+        // Check URL analyzing every segment
+        $routeUrl = $registeredRoute['url'];
+        $routeSegments = explode('/', $routeUrl);
+        if ($urlSegmentsCount !== count($routeSegments))
+            continue;
+
+        // Generate URL parameters
+        $urlParams = [];
+        for ($i = 0; $i < $urlSegmentsCount; $i++) {
+            $urlSegment = $urlSegments[$i];
+            $routeSegment = $routeSegments[$i];
+
+            if (@$routeSegment[0] === ':') {
+                // This segment is a parameter
+                $urlParams[] = $urlSegment;
+            } elseif ($routeSegment !== $urlSegment) {
+                // Not matched.
+                continue 2;
+            }
         }
+
+        // URL matched.
+        // Check HTTP method
+        if ($registeredRoute['httpMethod'] !== $httpMethod)
+            continue;
+
+        // Check authentication
+        $authRequired = $registeredRoute['authRole'];
+        if ($authRequired === '*') {
+            // Generic login required
+            if (!isset($GLOBALS['auth']))
+                throw new AppHttpException(HTTP_NOT_LOGGED_IN);
+        } elseif ($authRequired !== NULL) {
+            // Specific login required
+            $userRole = $GLOBALS['auth']['role'];
+            if ($authRequired !== $userRole) {
+                $errorMessage = "Required role: $authRequired, detected role: $userRole";
+                throw new AppHttpException(HTTP_NOT_AUTHORIZED, new Exception($errorMessage));
+            }
+        }
+
+        // Checks passed.
+        // Invoke the controller function
+        $controller = $registeredRoute['controller'];
+        $class = new ReflectionClass($controller);
+        $method = $class->getMethod($registeredRoute['methodName']);
+        $methodParams = $method->getParameters();
+
+        // Add the input body (e.g.: in HTTP POST requests)
+        // to the method parameters array
+        if (count($methodParams) === count($urlParams) + 1) {
+            $body = json_decode(file_get_contents('php://input'), true);
+            $modelClass = $methodParams[count($methodParams) - 1]->getClass();
+            $model = $modelClass->newInstance($body);
+            $urlParams[] = $model;
+        }
+
+        $result = $method->invokeArgs($controller, $urlParams);
+        if ($result === null) {
+            // Use empty object instead of null value
+            $result = json_decode('{}');
+        }
+        return $result;
     }
 
     throw new AppHttpException(HTTP_NOT_FOUND);
 }
+
+

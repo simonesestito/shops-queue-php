@@ -15,13 +15,7 @@ $path = isset($_SERVER['PATH_INFO']) ? rtrim($_SERVER['PATH_INFO'], '/') : '';
 header('Content-Type: application/json');
 
 try {
-    $controllerClass = findController($path);
-    /** @var $controller BaseController */
-    $controller = getInstanceOf($controllerClass);
-
-    $subUrl = str_replace($controller::getBaseUrl(), '', $path);
-
-    $result = $controller->handleRequest($subUrl);
+    $result = handleHttpRequest($path);
     echo json_encode($result);
 } catch (Exception $e) {
     $appException = AppHttpException::fromException($e);
