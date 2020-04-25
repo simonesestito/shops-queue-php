@@ -138,12 +138,7 @@ function handleHttpRequest($url) {
             $urlParams[] = $model;
         }
 
-        $result = $method->invokeArgs($controller, $urlParams);
-        if ($result === null) {
-            // Use empty object instead of null value
-            $result = json_decode('{}');
-        }
-        return $result;
+        return $method->invokeArgs($controller, $urlParams);
     }
 
     if ($urlMatched) {
