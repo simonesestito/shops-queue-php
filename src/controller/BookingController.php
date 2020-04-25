@@ -10,6 +10,7 @@ class BookingController extends BaseController {
         $this->registerRoute('/shops/:shopId/bookings', 'GET', '*', 'getBookingsByShop');
         $this->registerRoute('/users/:userId/bookings', 'GET', '*', 'getBookingsByUser');
         $this->registerRoute('/bookings/:id', 'GET', '*', 'getBookingById');
+        $this->registerRoute('/bookings/:id', 'DELETE', '*', 'deleteBooking');
     }
 
     /**
@@ -95,16 +96,35 @@ class BookingController extends BaseController {
         $booking = new Booking($entity);
 
         $authContext = AuthService::getAuthContext();
-        $currentRole = $authContext['role'];
-        $currentUser = $authContext['id'];
-        $ownerShopId = $authContext['shopId'];
-
-        if ($currentRole === 'USER' && $currentUser !== $booking->user->id)
-            throw new AppHttpException(HTTP_NOT_AUTHORIZED);
-        if ($currentRole === 'OWNER' && $ownerShopId !== $booking->shop->id)
+        if (!$this->isAccessAuthorized($authContext, $booking))
             throw new AppHttpException(HTTP_NOT_AUTHORIZED);
 
         return $booking;
+    }
+
+    /**
+     * Delete a booking by its ID, if authorized
+     * @param $id
+     */
+    public function deleteBooking($id) {
+        $id = intval($id);
+        $authContext = AuthService::getAuthContext();
+        if ($authContext['role'] === 'ADMIN')
+            $this->bookingDao->deleteBookingById($id);
+        else
+            $this->bookingDao->deleteBookingByIdForUser($authContext['id'], $id);
+    }
+
+    /**
+     * Check if the current user is allowed to operate on the given Booking
+     * @param $authContext
+     * @param Booking $booking
+     * @return bool True if authorized
+     */
+    private function isAccessAuthorized($authContext, Booking $booking): bool {
+        return $authContext['role'] === 'ADMIN' ||
+            $authContext['id'] === $booking->user->id ||
+            $authContext['shopId'] === $booking->shop->id;
     }
 }
 
