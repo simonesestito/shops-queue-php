@@ -32,7 +32,7 @@ class BookingDao extends Dao {
     public function getBookingsByUserId(int $userId): array {
         $sql = "SELECT *,
                 Booking.id AS bookingId,
-                Shop.id AS shopId
+                Shop.id AS bookingShopId
                 FROM Booking
                 JOIN Shop ON Booking.shopId = Shop.id
                 WHERE Booking.userId = ?
@@ -45,12 +45,20 @@ class BookingDao extends Dao {
      * assuming the current timestamp as the creation date
      * @param int $userId
      * @param int $shopId
-     * @return int Created booking's ID
+     * @return array Booking and shop record, like getBookingsByUserId()
+     * @see BookingDao::getBookingsByUserId()
      */
-    public function addNewBooking(int $userId, int $shopId) {
-        return $this->query("INSERT INTO Booking (userId, shopId) VALUES (?, ?)", [
+    public function addNewUserBooking(int $userId, int $shopId) {
+        $bookingId = $this->query("INSERT INTO Booking (userId, shopId) VALUES (?, ?)", [
             $userId,
             $shopId
         ]);
+        $result = $this->query("SELECT *,
+                Booking.id AS bookingId,
+                Shop.id AS bookingShopId
+                FROM Booking
+                JOIN Shop ON Booking.shopId = Shop.id
+                WHERE Booking.id = ?", [$bookingId]);
+        return $result[0];
     }
 }
