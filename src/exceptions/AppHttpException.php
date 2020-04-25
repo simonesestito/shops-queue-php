@@ -13,9 +13,22 @@ define('HTTP_SERVER_ERROR', 500);
 class AppHttpException extends Exception {
     private $httpStatus;
 
-    public function __construct(int $httpStatus, Throwable $previous = null) {
-        $message = $previous == null ? '' : $previous->getMessage();
-        parent::__construct($message, 0, $previous);
+    /**
+     * AppHttpException constructor.
+     * @param int $httpStatus
+     * @param string|Throwable|null $previous Causing exception or motivation
+     */
+    public function __construct(int $httpStatus, $previous = null) {
+        if ($previous === null)
+            $message = '';
+        elseif (is_string($previous))
+            $message = $previous;
+        elseif ($previous instanceof Throwable)
+            $message = $previous->getMessage();
+        else
+            $message = '';
+
+        parent::__construct($message);
         $this->httpStatus = $httpStatus;
     }
 

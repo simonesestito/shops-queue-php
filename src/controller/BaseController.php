@@ -118,7 +118,7 @@ function handleHttpRequest($url) {
             $userRole = AuthService::getAuthContext()['role'];
             if ($authRequired !== $userRole) {
                 $errorMessage = "Required role: $authRequired, detected role: $userRole";
-                throw new AppHttpException(HTTP_NOT_AUTHORIZED, new Exception($errorMessage));
+                throw new AppHttpException(HTTP_NOT_AUTHORIZED, $errorMessage);
             }
         }
 
