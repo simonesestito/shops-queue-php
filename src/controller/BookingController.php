@@ -9,7 +9,6 @@ class BookingController extends BaseController {
         $this->registerRoute('/shops/:shopId/bookings', 'POST', 'USER', 'addBookingToShop');
         $this->registerRoute('/shops/:shopId/bookings', 'GET', '*', 'getBookingsByShop');
         $this->registerRoute('/users/:userId/bookings', 'GET', '*', 'getBookingsByUser');
-        $this->registerRoute('/bookings/:id', 'GET', '*', 'getBookingById');
         $this->registerRoute('/bookings/:id', 'DELETE', '*', 'deleteBooking');
     }
 
@@ -80,29 +79,6 @@ class BookingController extends BaseController {
     }
 
     /**
-     * Get a single booking by ID
-     * If the current user isn't allowed to access the requested Booking,
-     * it will throw an error
-     * @param $id mixed
-     * @return Booking
-     * @throws AppHttpException
-     */
-    public function getBookingById($id) {
-        $id = intval($id);
-
-        $entity = $this->bookingDao->getBookingById($id);
-        if ($entity === null)
-            throw new AppHttpException(HTTP_NOT_FOUND);
-        $booking = new Booking($entity);
-
-        $authContext = AuthService::getAuthContext();
-        if (!$this->isAccessAuthorized($authContext, $booking))
-            throw new AppHttpException(HTTP_NOT_AUTHORIZED);
-
-        return $booking;
-    }
-
-    /**
      * Delete a booking by its ID, if authorized
      * @param $id
      */
@@ -113,18 +89,6 @@ class BookingController extends BaseController {
             $this->bookingDao->deleteBookingById($id);
         else
             $this->bookingDao->deleteBookingByIdForUser($authContext['id'], $id);
-    }
-
-    /**
-     * Check if the current user is allowed to operate on the given Booking
-     * @param $authContext
-     * @param Booking $booking
-     * @return bool True if authorized
-     */
-    private function isAccessAuthorized($authContext, Booking $booking): bool {
-        return $authContext['role'] === 'ADMIN' ||
-            $authContext['id'] === $booking->user->id ||
-            $authContext['shopId'] === $booking->shop->id;
     }
 }
 
