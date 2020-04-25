@@ -113,6 +113,7 @@ FROM Session
 
 -- Apply the haversine formula to calculate
 -- the distance between 2 points on Earth in KMs
+DROP FUNCTION IF EXISTS DISTANCE_KM;
 DELIMITER $$
 CREATE FUNCTION DISTANCE_KM(lat0 FLOAT(10, 6),
                             lon0 FLOAT(10, 6),
