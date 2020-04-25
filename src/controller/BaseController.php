@@ -111,11 +111,11 @@ function handleHttpRequest($url) {
         $authRequired = $registeredRoute['authRole'];
         if ($authRequired === '*') {
             // Generic login required
-            if (!isset($GLOBALS['auth']))
+            if (AuthService::getAuthContext() === null)
                 throw new AppHttpException(HTTP_NOT_LOGGED_IN);
         } elseif ($authRequired !== NULL) {
             // Specific login required
-            $userRole = $GLOBALS['auth']['role'];
+            $userRole = AuthService::getAuthContext()['role'];
             if ($authRequired !== $userRole) {
                 $errorMessage = "Required role: $authRequired, detected role: $userRole";
                 throw new AppHttpException(HTTP_NOT_AUTHORIZED, new Exception($errorMessage));

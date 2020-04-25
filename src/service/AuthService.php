@@ -85,8 +85,11 @@ class AuthService {
         }
     }
 
+    /**
+     * @return mixed Record of SessionDetail SQL view
+     */
     public static final function getAuthContext() {
-        return $GLOBALS['auth'];
+        return @$GLOBALS['auth'];
     }
 
     public static final function setAuthContext($authContext) {

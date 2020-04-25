@@ -12,8 +12,8 @@ class SessionDao extends Dao {
             $sessionData['accessToken']
         ]);
 
-        $sessionData['id'] = $id;
-        return $sessionData;
+        $records = $this->query("SELECT * FROM SessionDetail WHERE sessionId = ?", [$id]);
+        return @$records[0];
     }
 
     /**
@@ -22,14 +22,7 @@ class SessionDao extends Dao {
      * @return mixed Session record with user and role info
      */
     public function getSessionByAccessToken(string $accessToken) {
-        $sql = "SELECT User.*,
-                       Role.name AS role,
-                       Session.accessToken
-                FROM Session
-                JOIN User on Session.userId = User.id
-                JOIN Role on User.roleId = Role.id
-                WHERE accessToken = ?";
-        $records = $this->query($sql, [$accessToken]);
+        $records = $this->query("SELECT * FROM SessionDetail WHERE accessToken = ?", [$accessToken]);
         return @$records[0];
     }
 

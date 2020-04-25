@@ -102,6 +102,15 @@ FROM Booking
          JOIN Shop ON Booking.shopId = Shop.id
 ORDER BY Booking.createdAt;
 
+DROP VIEW IF EXISTS SessionDetail;
+CREATE VIEW SessionDetail AS
+SELECT Session.id AS sessionId,
+       Session.accessToken,
+       UserWithRole.*
+FROM Session
+         JOIN UserWithRole ON Session.userId = UserWithRole.id;
+
+
 -- Apply the haversine formula to calculate
 -- the distance between 2 points on Earth in KMs
 DELIMITER $$
