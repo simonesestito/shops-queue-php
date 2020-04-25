@@ -52,6 +52,7 @@ function registerController($className) {
  * It takes HTTP method and body from superglobal variables
  * @param $url string URL to match
  * @return object Returned by the handler function
+ * @throws Exception
  */
 function handleHttpRequest($url) {
     global $_controllers;
