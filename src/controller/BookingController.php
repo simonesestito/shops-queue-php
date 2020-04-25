@@ -9,6 +9,7 @@ class BookingController extends BaseController {
         $this->registerRoute('/shops/:shopId/bookings', 'POST', 'USER', 'addBookingToShop');
         $this->registerRoute('/shops/:shopId/bookings', 'GET', '*', 'getBookingsByShop');
         $this->registerRoute('/users/:userId/bookings', 'GET', '*', 'getBookingsByUser');
+        $this->registerRoute('/bookings/:id', 'GET', '*', 'getBookingById');
     }
 
     /**
@@ -75,6 +76,35 @@ class BookingController extends BaseController {
         return array_map(function ($entity) {
             return new Booking($entity);
         }, $entities);
+    }
+
+    /**
+     * Get a single booking by ID
+     * If the current user isn't allowed to access the requested Booking,
+     * it will throw an error
+     * @param $id mixed
+     * @return Booking
+     * @throws AppHttpException
+     */
+    public function getBookingById($id) {
+        $id = intval($id);
+
+        $entity = $this->bookingDao->getBookingById($id);
+        if ($entity === null)
+            throw new AppHttpException(HTTP_NOT_FOUND);
+        $booking = new Booking($entity);
+
+        $authContext = AuthService::getAuthContext();
+        $currentRole = $authContext['role'];
+        $currentUser = $authContext['id'];
+        $ownerShopId = $authContext['shopId'];
+
+        if ($currentRole === 'USER' && $currentUser !== $booking->user->id)
+            throw new AppHttpException(HTTP_NOT_AUTHORIZED);
+        if ($currentRole === 'OWNER' && $ownerShopId !== $booking->shop->id)
+            throw new AppHttpException(HTTP_NOT_AUTHORIZED);
+
+        return $booking;
     }
 }
 
