@@ -72,4 +72,29 @@ class BookingDao extends Dao {
     public function deleteBookingById(int $id) {
         $this->query("DELETE FROM Booking WHERE id = ?", [$id]);
     }
+
+    /**
+     * Get and remove from the queue, the next user waiting for his turn
+     * It will only work if the current user is the shop owner of that shop
+     * @param int $shopId
+     * @param int $ownerId Current user which will be verified to be the owner
+     * @return array|null Removed BookingDetail record or null
+     */
+    public function popShopQueueForOwner(int $shopId, int $ownerId) {
+        // Join with User to know who is the owner of this shop
+        $usersResult = $this->query(
+            "SELECT BookingDetail.*
+                    FROM BookingDetail
+                    JOIN User ON User.shopId = BookingDetail.bookingShopId
+                    WHERE bookingShopId = ?
+                    AND User.id = ?
+                    LIMIT 1", [$shopId, $ownerId]);
+
+        if (empty($usersResult))
+            return null;
+
+        $nextUser = $usersResult[0];
+        $this->query("DELETE FROM Booking WHERE id = ?", [$nextUser['bookingId']]);
+        return $nextUser;
+    }
 }

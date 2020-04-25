@@ -9,6 +9,7 @@ class BookingController extends BaseController {
         $this->registerRoute('/shops/:shopId/bookings', 'POST', 'USER', 'addBookingToShop');
         $this->registerRoute('/shops/:shopId/bookings', 'GET', '*', 'getBookingsByShop');
         $this->registerRoute('/shops/:shopId/bookings/count', 'GET', '*', 'getShopBookingsCount');
+        $this->registerRoute('/shops/:shopId/bookings/next', 'POST', 'OWNER', 'callNextUser');
         $this->registerRoute('/users/:userId/bookings', 'GET', '*', 'getBookingsByUser');
         $this->registerRoute('/bookings/:id', 'DELETE', '*', 'deleteBooking');
     }
@@ -103,6 +104,26 @@ class BookingController extends BaseController {
         $id = intval($id);
         $count = $this->bookingDao->countBookingsByShopId($id);
         return ['count' => $count];
+    }
+
+    /**
+     * Call the next user in the shops queue.
+     *
+     * NOTE: This method returns null if there's no one in the queue
+     * A client must be aware of this.
+     *
+     * @param $id mixed Shop ID
+     * @return Booking|null
+     */
+    public function callNextUser($id) {
+        $id = intval($id);
+
+        $calledUser = $this->bookingDao->popShopQueueForOwner($id, AuthService::getAuthContext()['id']);
+        if ($calledUser === null)
+            // No users in the queue
+            return null;
+
+        return new Booking($calledUser);
     }
 }
 
