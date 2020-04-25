@@ -75,6 +75,14 @@ CREATE TABLE Session
 
 SET FOREIGN_KEY_CHECKS = 1;
 
+DROP VIEW IF EXISTS UserWithRole;
+CREATE VIEW UserWithRole AS
+SELECT User.*,
+       Role.name AS role
+FROM User
+         JOIN Role ON User.roleId = Role.id;
+
+
 -- Apply the haversine formula to calculate
 -- the distance between 2 points on Earth in KMs
 DELIMITER $$

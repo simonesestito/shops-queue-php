@@ -5,6 +5,7 @@ class UserDao extends Dao {
     /**
      * Insert a new user account (role = USER)
      * @param NewUser $newUser
+     * @return array Newly created user, from UserWithRole view
      */
     public function insertNewUser(NewUser $newUser) {
         // Find the ID of the given role
@@ -23,8 +24,10 @@ class UserDao extends Dao {
         ];
 
         $sql = "INSERT INTO User (name, surname, email, password, roleId) VALUES (?, ?, ?, ?, ?)";
+        $id = $this->query($sql, $params);
 
-        $this->query($sql, $params);
+        $result = $this->query("SELECT * FROM UserWithRole WHERE id = ?", [$id]);
+        return $result[0];
     }
 
     /**
@@ -50,8 +53,10 @@ class UserDao extends Dao {
         ];
 
         $sql = "INSERT INTO User (name, surname, email, password, roleId, shopId) VALUES (?, ?, ?, ?, ?, ?)";
+        $id = $this->query($sql, $params);
 
-        $this->query($sql, $params);
+        $result = $this->query("SELECT * FROM UserWithRole WHERE id = ?", [$id]);
+        return $result[0];
     }
 
     /**
@@ -60,11 +65,7 @@ class UserDao extends Dao {
      * @return array|null Single associative array
      */
     public function getUserByEmail(string $email) {
-        $sql = "SELECT User.*, Role.name AS roleName
-                FROM User, Role
-                WHERE User.roleId = Role.id
-                AND email = ?";
-        $records = $this->query($sql, [$email]);
+        $records = $this->query("SELECT * FROM UserWithRole WHERE email = ?", [$email]);
         return @$records[0];
     }
 
@@ -74,11 +75,7 @@ class UserDao extends Dao {
      * @return array|null Single associative array
      */
     public function getUserById(int $id) {
-        $sql = "SELECT User.*, Role.name AS roleName
-                FROM User, Role
-                WHERE User.roleId = Role.id
-                AND User.id = ?";
-        $records = $this->query($sql, [$id]);
+        $records = $this->query("SELECT * FROM UserWithRole WHERE id = ?", [$id]);
         return @$records[0];
     }
 }
