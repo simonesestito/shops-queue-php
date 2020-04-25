@@ -1,6 +1,7 @@
 <?php
 
 define('MYSQL_DUPLICATE_ERROR', 1062);
+define('MYSQL_FOREIGN_KEY_ERROR', 1452);
 
 onInit(function () {
     /*

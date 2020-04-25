@@ -49,10 +49,13 @@ class Dao {
         }
 
         $errno = $statement->errno;
-        if ($errno === MYSQL_DUPLICATE_ERROR) {
-            throw new DuplicateEntityException();
-        } else {
-            throw new RuntimeException($statement->error);
+        switch ($statement->errno) {
+            case MYSQL_DUPLICATE_ERROR:
+                throw new DuplicateEntityException();
+            case MYSQL_FOREIGN_KEY_ERROR:
+                throw new ForeignKeyFailedException();
+            default:
+                throw new RuntimeException($statement->error);
         }
     }
 }

@@ -35,6 +35,8 @@ class AppHttpException extends Exception {
             $status = HTTP_CONFLICT;
         elseif ($e instanceof LoginException)
             $status = HTTP_NOT_LOGGED_IN;
+        elseif ($e instanceof ForeignKeyFailedException)
+            $status = HTTP_NOT_FOUND;
         else
             $status = HTTP_SERVER_ERROR;
 
