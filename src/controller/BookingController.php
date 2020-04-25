@@ -8,6 +8,7 @@ class BookingController extends BaseController {
         $this->bookingDao = $bookingDao;
         $this->registerRoute('/shops/:shopId/bookings', 'POST', 'USER', 'addBookingToShop');
         $this->registerRoute('/shops/:shopId/bookings', 'GET', '*', 'getBookingsByShop');
+        $this->registerRoute('/users/:userId/bookings', 'GET', '*', 'getBookingsByUser');
     }
 
     /**
@@ -46,6 +47,31 @@ class BookingController extends BaseController {
         }
 
         $entities = $this->bookingDao->getBookingsByShopId($shopId);
+        return array_map(function ($entity) {
+            return new Booking($entity);
+        }, $entities);
+    }
+
+    /**
+     * Get the bookings made by a user
+     * Users can only access the ones they created
+     * Admins can access everything
+     * @param $userId mixed
+     * @return Booking[]
+     * @throws AppHttpException
+     */
+    public function getBookingsByUser($userId) {
+        $userId = intval($userId);
+
+        // Check user role
+        $authContext = AuthService::getAuthContext();
+        $userRole = $authContext['role'];
+        $currentUser = $authContext['id'];
+        if ($userRole !== 'ADMIN' && $currentUser !== $userId) {
+            throw new AppHttpException(HTTP_NOT_AUTHORIZED);
+        }
+
+        $entities = $this->bookingDao->getBookingsByUserId($userId);
         return array_map(function ($entity) {
             return new Booking($entity);
         }, $entities);
