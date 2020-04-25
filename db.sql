@@ -48,10 +48,10 @@ CREATE TABLE User
 DROP TABLE IF EXISTS Booking;
 CREATE TABLE Booking
 (
-    id        INT  NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    userId    INT  NOT NULL,
-    shopId    INT  NOT NULL,
-    createdAt DATE NOT NULL,
+    id        INT      NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    userId    INT      NOT NULL,
+    shopId    INT      NOT NULL,
+    createdAt DATETIME NOT NULL DEFAULT CURRENT_TIME(),
     -- Ensure a user can only have one booking per shop
     UNIQUE (userId, shopId),
     FOREIGN KEY (userId) REFERENCES User (id)
