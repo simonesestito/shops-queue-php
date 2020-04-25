@@ -82,6 +82,25 @@ SELECT User.*,
 FROM User
          JOIN Role ON User.roleId = Role.id;
 
+DROP VIEW IF EXISTS BookingDetail;
+CREATE VIEW BookingDetail AS
+SELECT Booking.id      AS bookingId,
+       Shop.id         AS bookingShopId,
+       UserWithRole.id AS userId,
+       UserWithRole.name,
+       UserWithRole.surname,
+       UserWithRole.role,
+       UserWithRole.email,
+       Booking.createdAt,
+       Shop.name       AS shopName,
+       Shop.latitude,
+       Shop.longitude,
+       Shop.address,
+       Shop.city
+FROM Booking
+         JOIN UserWithRole ON Booking.userId = UserWithRole.id
+         JOIN Shop ON Booking.shopId = Shop.id
+ORDER BY Booking.createdAt;
 
 -- Apply the haversine formula to calculate
 -- the distance between 2 points on Earth in KMs

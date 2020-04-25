@@ -12,9 +12,9 @@ class BookingController extends BaseController {
     /**
      * Add a booking to the selected shop, made by the current user
      * @param $shopId
-     * @return BookingWithShop
+     * @return Booking New booking
      */
-    public function addBookingToShop($shopId): BookingWithShop {
+    public function addBookingToShop($shopId): Booking {
         // IDs are integers
         $shopId = intval($shopId);
 
@@ -22,7 +22,7 @@ class BookingController extends BaseController {
         $userId = AuthService::getAuthContext()['id'];
         $entity = $this->bookingDao->addNewUserBooking($userId, $shopId);
 
-        return new BookingWithShop($entity);
+        return new Booking($entity);
     }
 }
 

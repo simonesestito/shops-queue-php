@@ -12,14 +12,7 @@ class BookingDao extends Dao {
      * @return array
      */
     public function getBookingsByShopId(int $shopId): array {
-        $sql = "SELECT *,
-                Booking.id AS bookingId,
-                User.id AS userId
-                FROM Booking
-                JOIN User ON Booking.userId = User.id
-                WHERE Booking.shopId = ?
-                ORDER BY createdAt";
-        return $this->query($sql, [$shopId]);
+        return $this->query("SELECT * FROM BookingDetail WHERE bookingShopId = ?", [$shopId]);
     }
 
     /**
@@ -30,14 +23,7 @@ class BookingDao extends Dao {
      * @return array
      */
     public function getBookingsByUserId(int $userId): array {
-        $sql = "SELECT *,
-                Booking.id AS bookingId,
-                Shop.id AS bookingShopId
-                FROM Booking
-                JOIN Shop ON Booking.shopId = Shop.id
-                WHERE Booking.userId = ?
-                ORDER BY createdAt";
-        return $this->query($sql, [$userId]);
+        return $this->query("SELECT * FROM BookingDetail WHERE userId = ?", [$userId]);
     }
 
     /**
@@ -53,12 +39,7 @@ class BookingDao extends Dao {
             $userId,
             $shopId
         ]);
-        $result = $this->query("SELECT *,
-                Booking.id AS bookingId,
-                Shop.id AS bookingShopId
-                FROM Booking
-                JOIN Shop ON Booking.shopId = Shop.id
-                WHERE Booking.id = ?", [$bookingId]);
+        $result = $this->query("SELECT * FROM BookingDetail WHERE bookingId = ?", [$bookingId]);
         return $result[0];
     }
 }
