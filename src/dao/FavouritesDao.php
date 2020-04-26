@@ -12,4 +12,16 @@ class FavouritesDao extends Dao {
                                     JOIN Shop ON Favourites.shopId = Shop.id
                                     WHERE Favourites.userId = ?", [$userId]);
     }
+
+    /**
+     * Add a shop in user's favourites
+     * @param int $userId
+     * @param int $shopId
+     */
+    public function addFavourite(int $userId, int $shopId) {
+        $this->query("INSERT INTO Favourites (userId, shopId) VALUES (?, ?)", [
+            $userId,
+            $shopId,
+        ]);
+    }
 }
