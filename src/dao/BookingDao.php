@@ -36,14 +36,13 @@ class BookingDao extends Dao {
      * assuming the current timestamp as the creation date
      * @param int $userId
      * @param int $shopId
-     * @return array BookingDetail single record
+     * @return int New booking ID
      */
     public function addNewUserBooking(int $userId, int $shopId) {
-        $bookingId = $this->query("INSERT INTO Booking (userId, shopId) VALUES (?, ?)", [
+        return $this->query("INSERT INTO Booking (userId, shopId) VALUES (?, ?)", [
             $userId,
             $shopId
         ]);
-        return $this->getBookingById($bookingId);
     }
 
     /**

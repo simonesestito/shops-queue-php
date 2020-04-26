@@ -22,7 +22,8 @@ class BookingController extends BaseController {
     public function addBookingToShop(int $shopId): Booking {
         // Get current user
         $userId = AuthService::getAuthContext()['id'];
-        $entity = $this->bookingDao->addNewUserBooking($userId, $shopId);
+        $bookingId = $this->bookingDao->addNewUserBooking($userId, $shopId);
+        $entity = $this->bookingDao->getBookingById($bookingId);
 
         return new Booking($entity);
     }

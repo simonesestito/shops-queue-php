@@ -33,7 +33,8 @@ class AuthService {
             'userId' => $userEntity['id'],
             'accessToken' => $this->generateToken(ACCESS_TOKEN_BITS_LENGTH),
         ];
-        $createdSession = $this->sessionDao->createNewSession($newSession);
+        $createdSessionId = $this->sessionDao->createNewSession($newSession);
+        $createdSession = $this->sessionDao->getSessionById($createdSessionId);
 
         $user = new User($userEntity);
         return new AuthResponse($user, $createdSession['accessToken']);
