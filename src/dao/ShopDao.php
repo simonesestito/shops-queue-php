@@ -18,6 +18,39 @@ class ShopDao extends Dao {
     }
 
     /**
+     * Update a shop
+     * @param int $id
+     * @param NewShop $newShop
+     */
+    public function updateShop(int $id, NewShop $newShop) {
+        $sql = "UPDATE Shop
+                SET latitude = ?,
+                longitude = ?,
+                address = ?,
+                name = ?,
+                city = ?
+                WHERE id = ?";
+        $this->query($sql, [
+            $newShop->latitude,
+            $newShop->longitude,
+            $newShop->address,
+            $newShop->name,
+            $newShop->city,
+            $id
+        ]);
+    }
+
+    /**
+     * Get an existing shop by ID
+     * @param int $id
+     * @return array|null Shop record
+     */
+    public function getShopById(int $id) {
+        $result = $this->query("SELECT * FROM Shop WHERE id = ?", [$id]);
+        return @$result[0];
+    }
+
+    /**
      * Remove an existing shop from database
      * @param int $id Shop ID
      */

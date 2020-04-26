@@ -12,10 +12,7 @@ class ShopController extends BaseController {
         $this->validator = $validator;
         $this->registerRoute('/shops', 'POST', 'ADMIN', 'addNewShop');
         $this->registerRoute('/shops/nearby', 'GET', '*', 'findNearShops');
-    }
-
-    public static function getBaseUrl(): string {
-        return '/shops';
+        $this->registerRoute('/shops/:id', 'PUT', 'ADMIN', 'updateShop');
     }
 
     /**
@@ -27,7 +24,8 @@ class ShopController extends BaseController {
         $shopId = $this->shopDao->insertNewShop($newShopAccount->newShop);
         try {
             $this->userDao->insertShopOwner($newShopAccount->newUser, $shopId);
-            return $newShopAccount->newShop->toShop($shopId);
+            $entity = $this->shopDao->getShopById($shopId);
+            return new Shop($entity);
         } catch (DuplicateEntityException $e) {
             // User already exists
             // Revert adding the shop
@@ -69,6 +67,21 @@ class ShopController extends BaseController {
         }, $daoResult['data']);
 
         return new Page($page, $daoResult['count'], $objects);
+    }
+
+    /**
+     * Update an existing shop
+     * @param $id
+     * @param NewShop $newShop
+     * @return Shop
+     * @throws AppHttpException
+     */
+    public function updateShop($id, NewShop $newShop) {
+        $this->shopDao->updateShop($id, $newShop);
+        $entity = $this->shopDao->getShopById($id);
+        if ($entity === null)
+            throw new AppHttpException(HTTP_NOT_FOUND);
+        return new Shop($entity);
     }
 }
 
