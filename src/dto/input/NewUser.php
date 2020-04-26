@@ -20,11 +20,7 @@ class NewUser {
             // Optional. It's assigned when creating a shop owner account
             'shopId' => Validator::optional('is_int'),
             // Optional role
-            'role' => Validator::optional(Validator::isIn([
-                'USER',
-                'OWNER',
-                'ADMIN',
-            ])),
+            'role' => Validator::optional(Validator::isIn(DB_USER_ROLES)),
         ], $rawArray);
 
         $this->name = $rawArray['name'];

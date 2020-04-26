@@ -73,7 +73,7 @@ class Validator {
      */
     public function validate($schema, $data) {
         if ($data == null)
-            throw new ModelValidationException('root');
+            $data = [];
 
         foreach ($schema as $field => $validator) {
             $value = @$data[$field];

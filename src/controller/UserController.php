@@ -3,9 +3,12 @@
 
 class UserController extends BaseController {
     private $userDao;
+    private $validator;
 
-    public function __construct(UserDao $userDao) {
+    public function __construct(UserDao $userDao, Validator $validator) {
         $this->userDao = $userDao;
+        $this->validator = $validator;
+        $this->registerRoute('/users', 'GET', 'ADMIN', 'listUsers');
         $this->registerRoute('/users', 'POST', null, 'signupUser');
         $this->registerRoute('/users/me', 'GET', '*', 'getSelfUser');
         $this->registerRoute('/users/:id', 'GET', '*', 'getUserById');
@@ -37,6 +40,39 @@ class UserController extends BaseController {
 
         $userId = $this->userDao->insertNewUser($newUser);
         return new User($this->userDao->getUserById($userId));
+    }
+
+
+    /**
+     * List all users.
+     *
+     * Accepted GET params:
+     * - page: the page number, to use pagination
+     * - role
+     * - shopId
+     *
+     * @return Page Page of User objects
+     */
+    public function listUsers(): Page {
+        // Validate required get params
+        $this->validator->validate([
+            'page' => Validator::optional(Validator::filterAs(FILTER_VALIDATE_INT)),
+            'role' => Validator::optional(Validator::isIn(DB_USER_ROLES)),
+            'shopId' => Validator::optional(Validator::filterAs(FILTER_VALIDATE_INT)),
+        ], $_GET);
+
+        $page = isset($_GET['page']) ? intval($_GET['page']) : 0;
+        $role = @$_GET['role'];
+        $shopId = isset($_GET['shopId']) ? intval($_GET['shopId']) : null;
+
+        $offset = $page * PAGINATION_PAGE_SIZE;
+
+        $daoResult = $this->userDao->getUsers($offset, PAGINATION_PAGE_SIZE, $role, $shopId);
+        $objects = array_map(function ($e) {
+            return new User($e);
+        }, $daoResult['data']);
+
+        return new Page($page, $daoResult['count'], $objects);
     }
 
     /**
