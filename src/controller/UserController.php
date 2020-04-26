@@ -7,6 +7,7 @@ class UserController extends BaseController {
     public function __construct(UserDao $userDao) {
         $this->userDao = $userDao;
         $this->registerRoute('/users', 'POST', null, 'signupUser');
+        $this->registerRoute('/users/:id', 'GET', '*', 'getUserById');
     }
 
     /**
@@ -34,6 +35,28 @@ class UserController extends BaseController {
 
         $userId = $this->userDao->insertNewUser($newUser);
         return new User($this->userDao->getUserById($userId));
+    }
+
+    /**
+     * Get a user by ID
+     * @param $id mixed User id
+     * @return User
+     * @throws AppHttpException
+     */
+    public function getUserById($id) {
+        $id = intval($id);
+
+        $authContext = AuthService::getAuthContext();
+        if ($authContext['id'] !== $id && $authContext['role'] !== 'ADMIN') {
+            throw new AppHttpException(HTTP_NOT_AUTHORIZED);
+        }
+
+        $entity = $this->userDao->getUserById($id);
+        if ($entity === null) {
+            throw new AppHttpException(HTTP_NOT_FOUND);
+        }
+
+        return new User($entity);
     }
 }
 
