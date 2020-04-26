@@ -100,7 +100,7 @@ Some files or folders may have been omitted
 <a name="database"></a>
 ## Database
 
-**TODO: Add E/R diagram and tables schema**
+![Database tables](https://github.com/simonesestito/shops-queue-php/blob/master/graphics/db_schema.png?raw=true)
 
 <a name="license"></a>
 ## License
