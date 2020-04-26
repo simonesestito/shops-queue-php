@@ -63,13 +63,12 @@ class ShopController extends BaseController {
 
     /**
      * Update an existing shop
-     * @param $id
+     * @param $id int
      * @param NewShop $newShop
      * @return Shop
      * @throws AppHttpException
      */
-    public function updateShop($id, NewShop $newShop) {
-        $id = intval($id);
+    public function updateShop(int $id, NewShop $newShop) {
         $this->shopDao->updateShop($id, $newShop);
         $entity = $this->shopDao->getShopById($id);
         if ($entity === null)
@@ -79,10 +78,9 @@ class ShopController extends BaseController {
 
     /**
      * Delete an existing shop
-     * @param $id
+     * @param $id int
      */
-    public function deleteShop($id) {
-        $id = intval($id);
+    public function deleteShop(int $id) {
         $this->shopDao->removeShopById($id);
     }
 }

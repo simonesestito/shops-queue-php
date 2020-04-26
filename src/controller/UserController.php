@@ -77,13 +77,11 @@ class UserController extends BaseController {
 
     /**
      * Get a user by ID
-     * @param $id mixed User id
+     * @param $id int User id
      * @return User
      * @throws AppHttpException
      */
-    public function getUserById($id) {
-        $id = intval($id);
-
+    public function getUserById(int $id) {
         $authContext = AuthService::getAuthContext();
         if ($authContext['id'] !== $id && $authContext['role'] !== 'ADMIN') {
             throw new AppHttpException(HTTP_NOT_AUTHORIZED);
@@ -108,10 +106,9 @@ class UserController extends BaseController {
 
     /**
      * Delete a user
-     * @param $id mixed User ID
+     * @param $id int User ID
      */
-    public function deleteUser($id) {
-        $id = intval($id);
+    public function deleteUser(int $id) {
         $this->userDao->deleteUser($id);
     }
 }

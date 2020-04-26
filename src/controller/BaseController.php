@@ -129,6 +129,17 @@ function handleHttpRequest($url) {
         $method = $class->getMethod($registeredRoute['methodName']);
         $methodParams = $method->getParameters();
 
+        // Convert types if required
+        for ($i = 0; $i < count($methodParams); $i++) {
+            $methodParam = $methodParams[$i];
+            if ($methodParam->getType() === null)
+                continue;
+
+            $methodParamType = $methodParam->getType()->__toString();
+            if ($methodParamType === 'int')
+                $urlParams[$i] = intval($urlParams[$i]);
+        }
+
         // Add the input body (e.g.: in HTTP POST requests)
         // to the method parameters array
         if (count($methodParams) === count($urlParams) + 1) {

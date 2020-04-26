@@ -11,13 +11,11 @@ class FavouriteController extends BaseController {
 
     /**
      * Get the favourite shops of a user
-     * @param $id mixed User ID
+     * @param $id int User ID
      * @return Shop[]
      * @throws AppHttpException
      */
-    public function getFavouritesOfUser($id) {
-        $id = intval($id);
-
+    public function getFavouritesOfUser(int $id) {
         $authContext = AuthService::getAuthContext();
         if ($authContext['role'] !== 'ADMIN' && $authContext['id'] !== $id)
             throw new AppHttpException(HTTP_NOT_AUTHORIZED);

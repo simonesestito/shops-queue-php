@@ -16,13 +16,10 @@ class BookingController extends BaseController {
 
     /**
      * Add a booking to the selected shop, made by the current user
-     * @param $shopId
+     * @param $shopId int
      * @return Booking New booking
      */
-    public function addBookingToShop($shopId): Booking {
-        // IDs are integers
-        $shopId = intval($shopId);
-
+    public function addBookingToShop(int $shopId): Booking {
         // Get current user
         $userId = AuthService::getAuthContext()['id'];
         $entity = $this->bookingDao->addNewUserBooking($userId, $shopId);
@@ -34,13 +31,11 @@ class BookingController extends BaseController {
      * Get the bookings of a shop
      * Owners can only access their shop's bookings
      * Admins can access everything
-     * @param $shopId mixed
+     * @param $shopId int
      * @return Booking[]
      * @throws AppHttpException
      */
-    public function getBookingsByShop($shopId) {
-        $shopId = intval($shopId);
-
+    public function getBookingsByShop(int $shopId) {
         // Check user role
         $authContext = AuthService::getAuthContext();
         $userRole = $authContext['role'];
@@ -59,13 +54,11 @@ class BookingController extends BaseController {
      * Get the bookings made by a user
      * Users can only access the ones they created
      * Admins can access everything
-     * @param $userId mixed
+     * @param $userId int
      * @return Booking[]
      * @throws AppHttpException
      */
-    public function getBookingsByUser($userId) {
-        $userId = intval($userId);
-
+    public function getBookingsByUser(int $userId) {
         // Check user role
         $authContext = AuthService::getAuthContext();
         $userRole = $authContext['role'];
@@ -82,10 +75,9 @@ class BookingController extends BaseController {
 
     /**
      * Delete a booking by its ID, if authorized
-     * @param $id
+     * @param $id int Booking ID
      */
-    public function deleteBooking($id) {
-        $id = intval($id);
+    public function deleteBooking(int $id) {
         $authContext = AuthService::getAuthContext();
         if ($authContext['role'] === 'ADMIN')
             $this->bookingDao->deleteBookingById($id);
@@ -97,11 +89,10 @@ class BookingController extends BaseController {
      * Get the amount of people in queue in that shop
      * This endpoint can be used by user who couldn't access full bookings info (only owners and admins can),
      * but they just need to know the amount of people.
-     * @param $id mixed Shop ID
+     * @param $id int Shop ID
      * @return array
      */
-    public function getShopBookingsCount($id) {
-        $id = intval($id);
+    public function getShopBookingsCount(int $id) {
         $count = $this->bookingDao->countBookingsByShopId($id);
         return ['count' => $count];
     }
@@ -112,12 +103,10 @@ class BookingController extends BaseController {
      * NOTE: This method returns null if there's no one in the queue
      * A client must be aware of this.
      *
-     * @param $id mixed Shop ID
+     * @param $id int Shop ID
      * @return Booking|null
      */
-    public function callNextUser($id) {
-        $id = intval($id);
-
+    public function callNextUser(int $id) {
         $calledUser = $this->bookingDao->popShopQueueForOwner($id, AuthService::getAuthContext()['id']);
         if ($calledUser === null)
             // No users in the queue
