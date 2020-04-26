@@ -30,6 +30,14 @@ class UserDao extends Dao {
     }
 
     /**
+     * Delete a user
+     * @param $id int
+     */
+    public function deleteUser(int $id) {
+        $this->query("DELETE FROM User WHERE id = ?", [$id]);
+    }
+
+    /**
      * Find a user by his email address
      * @param string $email
      * @return array|null Single associative array

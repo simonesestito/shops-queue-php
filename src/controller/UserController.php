@@ -9,6 +9,7 @@ class UserController extends BaseController {
         $this->registerRoute('/users', 'POST', null, 'signupUser');
         $this->registerRoute('/users/me', 'GET', '*', 'getSelfUser');
         $this->registerRoute('/users/:id', 'GET', '*', 'getUserById');
+        $this->registerRoute('/users/:id', 'DELETE', 'ADMIN', 'deleteUser');
     }
 
     /**
@@ -67,6 +68,15 @@ class UserController extends BaseController {
      */
     public function getSelfUser() {
         return $this->getUserById(AuthService::getAuthContext()['id']);
+    }
+
+    /**
+     * Delete a user
+     * @param $id mixed User ID
+     */
+    public function deleteUser($id) {
+        $id = intval($id);
+        $this->userDao->deleteUser($id);
     }
 }
 
