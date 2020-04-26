@@ -8,6 +8,7 @@ class ShopController extends BaseController {
     public function __construct(ShopDao $shopDao, Validator $validator) {
         $this->shopDao = $shopDao;
         $this->validator = $validator;
+        $this->registerRoute('/shops', 'GET', 'ADMIN', 'listShops');
         $this->registerRoute('/shops', 'POST', 'ADMIN', 'addNewShop');
         $this->registerRoute('/shops/nearby', 'GET', '*', 'findNearShops');
         $this->registerRoute('/shops/:id', 'PUT', 'ADMIN', 'updateShop');
@@ -24,6 +25,23 @@ class ShopController extends BaseController {
         $shopId = $this->shopDao->insertNewShop($newShop);
         $entity = $this->shopDao->getShopById($shopId);
         return new Shop($entity);
+    }
+
+    /**
+     * List all the shops, ordered alphabetically
+     * It uses pagination.
+     * @return Page Page of Shops
+     */
+    public function listShops() {
+        $page = isset($_GET['page']) ? intval($_GET['page']) : 0;
+        $offset = $page * PAGINATION_PAGE_SIZE;
+
+        $daoResult = $this->shopDao->listShops($offset, PAGINATION_PAGE_SIZE);
+        $objects = array_map(function ($e) {
+            return new Shop($e);
+        }, $daoResult['data']);
+
+        return new Page($page, $daoResult['count'], $objects);
     }
 
     /**

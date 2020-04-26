@@ -41,6 +41,23 @@ class ShopDao extends Dao {
     }
 
     /**
+     * List all the shops, without distance
+     * It uses pagination
+     * @param int $offset
+     * @param int $limit
+     * @return array Associative array. Key 'count' has the total rows count, 'data' has the actual result
+     */
+    public function listShops(int $offset, int $limit) {
+        $data = $this->query("SELECT SQL_CALC_FOUND_ROWS * FROM Shop ORDER BY name LIMIT ?, ?", [$offset, $limit]);
+        $count = $this->query("SELECT FOUND_ROWS() AS c")[0]['c'];
+
+        return [
+            'data' => $data,
+            'count' => $count,
+        ];
+    }
+
+    /**
      * Get an existing shop by ID
      * @param int $id
      * @return array|null Shop record
