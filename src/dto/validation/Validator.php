@@ -37,6 +37,17 @@ class Validator {
     }
 
     /**
+     * Return a validator to check if the value is in a set of accepted ones
+     * @param $values string[] Enum values
+     * @return callable
+     */
+    public static function isIn($values) {
+        return function ($value) use ($values) {
+            return is_string($value) && in_array($value, $values);
+        };
+    }
+
+    /**
      * Return an associative array validator
      * @param Validator $validator
      * @param $schema

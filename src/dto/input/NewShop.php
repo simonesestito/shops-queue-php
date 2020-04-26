@@ -25,11 +25,4 @@ class NewShop {
         $this->latitude = $rawArray['latitude'];
         $this->longitude = $rawArray['longitude'];
     }
-
-
-    public function toShop(int $id): Shop {
-        $toArray = json_decode(json_encode($this), true);
-        $toArray['id'] = $id;
-        return new Shop($toArray);
-    }
 }

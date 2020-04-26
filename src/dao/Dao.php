@@ -23,7 +23,7 @@ class Dao {
         if (!empty($params)) {
             $types = '';
             foreach ($params as $param) {
-                if (is_string($param))
+                if (is_string($param) || $param === null)
                     $types .= 's';
                 elseif (is_int($param))
                     $types .= 'i';
@@ -48,7 +48,6 @@ class Dao {
                 return $statement->insert_id;
         }
 
-        $errno = $statement->errno;
         switch ($statement->errno) {
             case MYSQL_DUPLICATE_ERROR:
                 throw new DuplicateEntityException();

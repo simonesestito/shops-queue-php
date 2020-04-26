@@ -16,14 +16,31 @@ class AuthController extends BaseController {
         $this->registerRoute('/auth/logout', 'GET', '*', 'logout');
     }
 
-    public function signupUser(NewUser $newUser): AuthResponse {
-        $this->userDao->insertNewUser($newUser);
+    /**
+     * Create a new user
+     * @param NewUser $newUser
+     * @return User
+     * @throws AppHttpException If admin required
+     */
+    public function signupUser(NewUser $newUser): User {
+        // Admin check
+        $adminRequired = $newUser->role !== 'USER';
+        if ($adminRequired) {
+            // Only admins can create users with roles different from USER
+            $authContext = AuthService::getAuthContext();
+            if ($authContext === null)
+                throw new AppHttpException(HTTP_NOT_LOGGED_IN);
+            if ($authContext['role'] !== 'ADMIN')
+                throw new AppHttpException(HTTP_NOT_AUTHORIZED);
+        }
 
-        // Login immediately after sign up
-        return $this->login(new UserLogin([
-            'email' => $newUser->email,
-            'password' => $newUser->password,
-        ]));
+        if ($newUser->role === 'OWNER' && is_null($newUser->shopId)) {
+            // Owners must have a shop ID
+            throw new AppHttpException(HTTP_BAD_REQUEST, 'Missing shop ID');
+        }
+
+        $userId = $this->userDao->insertNewUser($newUser);
+        return new User($this->userDao->getUserById($userId));
     }
 
     public function login(UserLogin $userLogin): AuthResponse {

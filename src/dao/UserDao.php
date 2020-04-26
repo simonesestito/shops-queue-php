@@ -3,43 +3,16 @@
 
 class UserDao extends Dao {
     /**
-     * Insert a new user account (role = USER)
+     * Insert a new user account
      * @param NewUser $newUser
-     * @return array Newly created user, from UserWithRole view
+     * @return int ID of the newly created user
      */
     public function insertNewUser(NewUser $newUser) {
         // Find the ID of the given role
-        $roles = $this->query("SELECT * FROM Role WHERE name = 'USER'");
+        $role = $newUser->role;
+        $roles = $this->query("SELECT * FROM Role WHERE name = ?", [$role]);
         if (empty($roles)) {
-            throw new RuntimeException("Unable to find USER role");
-        }
-        $roleId = $roles[0]['id'];
-
-        $params = [
-            $newUser->name,
-            $newUser->surname,
-            $newUser->email,
-            password_hash($newUser->password, PASSWORD_BCRYPT),
-            $roleId
-        ];
-
-        $sql = "INSERT INTO User (name, surname, email, password, roleId) VALUES (?, ?, ?, ?, ?)";
-        $id = $this->query($sql, $params);
-
-        $result = $this->query("SELECT * FROM UserWithRole WHERE id = ?", [$id]);
-        return $result[0];
-    }
-
-    /**
-     * Insert a new shop owner
-     * @param NewUser $newUser
-     * @param int $shopId
-     */
-    public function insertShopOwner(NewUser $newUser, int $shopId) {
-        // Find the ID of the given role
-        $roles = $this->query("SELECT * FROM Role WHERE name = 'OWNER'");
-        if (empty($roles)) {
-            throw new RuntimeException("Unable to find OWNER role");
+            throw new RuntimeException("Unable to find role: $role");
         }
         $roleId = $roles[0]['id'];
 
@@ -49,14 +22,11 @@ class UserDao extends Dao {
             $newUser->email,
             password_hash($newUser->password, PASSWORD_BCRYPT),
             $roleId,
-            $shopId
+            $newUser->shopId,
         ];
 
         $sql = "INSERT INTO User (name, surname, email, password, roleId, shopId) VALUES (?, ?, ?, ?, ?, ?)";
-        $id = $this->query($sql, $params);
-
-        $result = $this->query("SELECT * FROM UserWithRole WHERE id = ?", [$id]);
-        return $result[0];
+        return $this->query($sql, $params);
     }
 
     /**

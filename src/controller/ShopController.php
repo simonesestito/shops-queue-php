@@ -3,12 +3,10 @@
 
 class ShopController extends BaseController {
     private $shopDao;
-    private $userDao;
     private $validator;
 
-    public function __construct(ShopDao $shopDao, UserDao $userDao, Validator $validator) {
+    public function __construct(ShopDao $shopDao, Validator $validator) {
         $this->shopDao = $shopDao;
-        $this->userDao = $userDao;
         $this->validator = $validator;
         $this->registerRoute('/shops', 'POST', 'ADMIN', 'addNewShop');
         $this->registerRoute('/shops/nearby', 'GET', '*', 'findNearShops');
@@ -17,22 +15,15 @@ class ShopController extends BaseController {
     }
 
     /**
-     * Create a new shop with the related Shop owner account
-     * @param NewShopAccount $newShopAccount
+     * Create a new shop
+     * The related Shop owner account must be created separately
+     * @param NewShop $newShop
      * @return Shop
      */
-    public function addNewShop(NewShopAccount $newShopAccount): Shop {
-        $shopId = $this->shopDao->insertNewShop($newShopAccount->newShop);
-        try {
-            $this->userDao->insertShopOwner($newShopAccount->newUser, $shopId);
-            $entity = $this->shopDao->getShopById($shopId);
-            return new Shop($entity);
-        } catch (DuplicateEntityException $e) {
-            // User already exists
-            // Revert adding the shop
-            $this->shopDao->removeShopById($shopId);
-            throw $e;
-        }
+    public function addNewShop(NewShop $newShop): Shop {
+        $shopId = $this->shopDao->insertNewShop($newShop);
+        $entity = $this->shopDao->getShopById($shopId);
+        return new Shop($entity);
     }
 
     /**
