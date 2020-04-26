@@ -13,6 +13,7 @@ class ShopController extends BaseController {
         $this->registerRoute('/shops', 'POST', 'ADMIN', 'addNewShop');
         $this->registerRoute('/shops/nearby', 'GET', '*', 'findNearShops');
         $this->registerRoute('/shops/:id', 'PUT', 'ADMIN', 'updateShop');
+        $this->registerRoute('/shops/:id', 'DELETE', 'ADMIN', 'deleteShop');
     }
 
     /**
@@ -77,11 +78,21 @@ class ShopController extends BaseController {
      * @throws AppHttpException
      */
     public function updateShop($id, NewShop $newShop) {
+        $id = intval($id);
         $this->shopDao->updateShop($id, $newShop);
         $entity = $this->shopDao->getShopById($id);
         if ($entity === null)
             throw new AppHttpException(HTTP_NOT_FOUND);
         return new Shop($entity);
+    }
+
+    /**
+     * Delete an existing shop
+     * @param $id
+     */
+    public function deleteShop($id) {
+        $id = intval($id);
+        $this->shopDao->removeShopById($id);
     }
 }
 
