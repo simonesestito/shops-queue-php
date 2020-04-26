@@ -7,6 +7,7 @@ class UserController extends BaseController {
     public function __construct(UserDao $userDao) {
         $this->userDao = $userDao;
         $this->registerRoute('/users', 'POST', null, 'signupUser');
+        $this->registerRoute('/users/me', 'GET', '*', 'getSelfUser');
         $this->registerRoute('/users/:id', 'GET', '*', 'getUserById');
     }
 
@@ -57,6 +58,15 @@ class UserController extends BaseController {
         }
 
         return new User($entity);
+    }
+
+    /**
+     * Get the currently logged in user
+     * @return User
+     * @throws AppHttpException
+     */
+    public function getSelfUser() {
+        return $this->getUserById(AuthService::getAuthContext()['id']);
     }
 }
 
