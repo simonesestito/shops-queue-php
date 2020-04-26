@@ -24,4 +24,16 @@ class FavouritesDao extends Dao {
             $shopId,
         ]);
     }
+
+    /**
+     * Remove a shop from user's favourites
+     * @param int $userId
+     * @param int $shopId
+     */
+    public function removeFavourite(int $userId, int $shopId) {
+        $this->query("DELETE FROM Favourites WHERE userId = ? AND shopId = ?", [
+            $userId,
+            $shopId,
+        ]);
+    }
 }

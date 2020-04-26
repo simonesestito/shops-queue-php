@@ -8,6 +8,7 @@ class FavouriteController extends BaseController {
         $this->favouritesDao = $favouritesDao;
         $this->registerRoute('/users/:id/favourites', 'GET', '*', 'getFavouritesOfUser');
         $this->registerRoute('/users/:userId/favourites/:shopId', 'POST', '*', 'addFavourite');
+        $this->registerRoute('/users/:userId/favourites/:shopId', 'DELETE', '*', 'removeFavourite');
     }
 
     /**
@@ -39,6 +40,20 @@ class FavouriteController extends BaseController {
             throw new AppHttpException(HTTP_NOT_AUTHORIZED);
 
         $this->favouritesDao->addFavourite($userId, $shopId);
+    }
+
+    /**
+     * Remove a shop from user's favourites
+     * @param $userId int
+     * @param $shopId int
+     * @throws AppHttpException
+     */
+    public function removeFavourite(int $userId, int $shopId) {
+        $authContext = AuthService::getAuthContext();
+        if ($authContext['role'] !== 'ADMIN' && $authContext['id'] !== $userId)
+            throw new AppHttpException(HTTP_NOT_AUTHORIZED);
+
+        $this->favouritesDao->removeFavourite($userId, $shopId);
     }
 }
 
