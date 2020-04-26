@@ -36,10 +36,7 @@ CREATE TABLE User
     -- BCrypt hash length
     password VARCHAR(60)  NOT NULL,
     roleId   INT          NOT NULL DEFAULT 1,
-    -- If the user is a shop owner, this will reference that shop
-    -- One-to-one relation
     shopId   INT                   DEFAULT NULL,
-    UNIQUE (shopId),
     UNIQUE (email),
     FOREIGN KEY (roleID) REFERENCES Role (id)
         ON UPDATE CASCADE ON DELETE CASCADE
