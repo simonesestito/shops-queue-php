@@ -64,7 +64,7 @@ class ShopDao extends Dao {
      * @return array Associative array. Key 'count' has the total rows count, 'data' has the actual result
      */
     public function listShops(int $offset, int $limit) {
-        $data = $this->query("SELECT SQL_CALC_FOUND_ROWS * FROM Shop ORDER BY name LIMIT ?, ?", [$offset, $limit]);
+        $data = $this->query("SELECT SQL_CALC_FOUND_ROWS * FROM ShopWithCount ORDER BY name LIMIT ?, ?", [$offset, $limit]);
         $count = $this->query("SELECT FOUND_ROWS() AS c")[0]['c'];
 
         return [
@@ -76,10 +76,10 @@ class ShopDao extends Dao {
     /**
      * Get an existing shop by ID
      * @param int $id
-     * @return array|null Shop record
+     * @return array|null ShopWithCount record
      */
     public function getShopById(int $id) {
-        $result = $this->query("SELECT * FROM Shop WHERE id = ?", [$id]);
+        $result = $this->query("SELECT * FROM ShopWithCount WHERE id = ?", [$id]);
         return @$result[0];
     }
 
@@ -107,7 +107,7 @@ class ShopDao extends Dao {
     public function findShops(float $fromLat, float $fromLon, int $offset, int $limit, string $query): array {
         $sql = "
         SELECT SQL_CALC_FOUND_ROWS *, DISTANCE_KM(?, ?, longitude, latitude) AS distance
-        FROM Shop
+        FROM ShopWithCount
         WHERE name LIKE ?
         ORDER BY distance
         LIMIT ?, ?

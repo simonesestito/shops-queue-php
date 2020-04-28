@@ -107,24 +107,32 @@ SELECT User.*,
 FROM User
          JOIN Role ON User.roleId = Role.id;
 
+DROP VIEW IF EXISTS ShopWithCount;
+CREATE VIEW ShopWithCount AS
+SELECT Shop.*, COUNT(Booking.userId) AS count
+FROM Shop
+         LEFT JOIN Booking ON Shop.id = Booking.shopId
+GROUP BY Shop.id;
+
 DROP VIEW IF EXISTS BookingDetail;
 CREATE VIEW BookingDetail AS
-SELECT Booking.id      AS bookingId,
-       Shop.id         AS bookingShopId,
-       UserWithRole.id AS userId,
+SELECT Booking.id         AS bookingId,
+       ShopWithCount.id   AS bookingShopId,
+       UserWithRole.id    AS userId,
        UserWithRole.name,
        UserWithRole.surname,
        UserWithRole.role,
        UserWithRole.email,
        Booking.createdAt,
-       Shop.name       AS shopName,
-       Shop.latitude,
-       Shop.longitude,
-       Shop.address,
-       Shop.city
+       ShopWithCount.name AS shopName,
+       ShopWithCount.latitude,
+       ShopWithCount.longitude,
+       ShopWithCount.address,
+       ShopWithCount.city,
+       ShopWithCount.count
 FROM Booking
          JOIN UserWithRole ON Booking.userId = UserWithRole.id
-         JOIN Shop ON Booking.shopId = Shop.id
+         JOIN ShopWithCount ON Booking.shopId = ShopWithCount.id
 ORDER BY Booking.createdAt;
 
 DROP VIEW IF EXISTS SessionDetail;

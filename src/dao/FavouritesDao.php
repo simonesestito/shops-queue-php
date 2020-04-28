@@ -24,8 +24,9 @@ class FavouritesDao extends Dao {
      * @return array Shop records
      */
     public function getFavouritesOfUser(int $userId) {
-        return $this->query("SELECT Shop.* FROM Favourites 
-                                    JOIN Shop ON Favourites.shopId = Shop.id
+        return $this->query("SELECT ShopWithCount.*
+                                    FROM Favourites 
+                                    JOIN ShopWithCount ON Favourites.shopId = ShopWithCount.id
                                     WHERE Favourites.userId = ?", [$userId]);
     }
 
