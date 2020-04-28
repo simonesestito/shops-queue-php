@@ -24,7 +24,6 @@ class BookingController extends BaseController {
         $this->bookingDao = $bookingDao;
         $this->registerRoute('/shops/:shopId/bookings', 'POST', 'USER', 'addBookingToShop');
         $this->registerRoute('/shops/:shopId/bookings', 'GET', '*', 'getBookingsByShop');
-        $this->registerRoute('/shops/:shopId/bookings/count', 'GET', '*', 'getShopBookingsCount');
         $this->registerRoute('/shops/:shopId/bookings/next', 'POST', 'OWNER', 'callNextUser');
         $this->registerRoute('/users/:userId/bookings', 'GET', '*', 'getBookingsByUser');
         $this->registerRoute('/bookings/:id', 'DELETE', '*', 'deleteBooking');
@@ -100,18 +99,6 @@ class BookingController extends BaseController {
             $this->bookingDao->deleteBookingById($id);
         else
             $this->bookingDao->deleteBookingByIdForUser($authContext['id'], $id);
-    }
-
-    /**
-     * Get the amount of people in queue in that shop
-     * This endpoint can be used by user who couldn't access full bookings info (only owners and admins can),
-     * but they just need to know the amount of people.
-     * @param $id int Shop ID
-     * @return array
-     */
-    public function getShopBookingsCount(int $id) {
-        $count = $this->bookingDao->countBookingsByShopId($id);
-        return ['count' => $count];
     }
 
     /**

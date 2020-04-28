@@ -31,15 +31,6 @@ class BookingDao extends Dao {
     }
 
     /**
-     * Get the number of bookings for that shop
-     * @param $id int Shop ID
-     * @return int
-     */
-    public function countBookingsByShopId($id) {
-        return $this->query("SELECT COUNT(*) AS c FROM Booking WHERE shopId = ?", [$id])[0]['c'];
-    }
-
-    /**
      * Get all bookings made by a given user, sorted by creation date.
      * @param int $userId
      * @return array BookingDetail records
