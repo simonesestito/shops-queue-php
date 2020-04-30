@@ -26,7 +26,7 @@ class UserController extends BaseController {
         $this->validator = $validator;
         $this->registerRoute('/users', 'GET', 'ADMIN', 'listUsers');
         $this->registerRoute('/users', 'POST', null, 'signupUser');
-        $this->registerRoute('/users/me', 'GET', '*', 'getSelfUser');
+        $this->registerRoute('/users/me', 'GET', '*', 'getCurrentUser');
         $this->registerRoute('/users/:id', 'GET', '*', 'getUserById');
         $this->registerRoute('/users/:id', 'DELETE', 'ADMIN', 'deleteUser');
     }
@@ -116,7 +116,7 @@ class UserController extends BaseController {
      * @return User
      * @throws AppHttpException
      */
-    public function getSelfUser() {
+    public function getCurrentUser() {
         return $this->getUserById(AuthService::getAuthContext()['id']);
     }
 
