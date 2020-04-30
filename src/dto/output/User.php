@@ -35,6 +35,6 @@ class User {
         $this->surname = $entity['surname'];
         $this->email = $entity['email'];
         $this->role = $entity['role'];
-        $this->shopId = $entity['shopId'];
+        $this->shopId = @$entity['shopId'];
     }
 }

@@ -89,7 +89,10 @@ class BookingDao extends Dao {
      */
     public function popShopQueueForOwner(int $shopId, int $ownerId) {
         // Lock table to prevent concurrency issues
-        $this->query("LOCK TABLES Booking WRITE");
+        try {
+            $this->query("LOCK TABLES Booking WRITE");
+        } catch (Throwable $ignored) {
+        }
 
         try {
             // Join with User to know who is the owner of this shop
@@ -108,7 +111,10 @@ class BookingDao extends Dao {
             $this->query("DELETE FROM Booking WHERE id = ?", [$nextUser['bookingId']]);
             return $nextUser;
         } finally {
-            $this->query("UNLOCK TABLES");
+            try {
+                $this->query("UNLOCK TABLES");
+            } catch (Throwable $ignored) {
+            }
         }
     }
 }
