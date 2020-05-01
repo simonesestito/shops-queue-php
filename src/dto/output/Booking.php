@@ -29,7 +29,7 @@ class Booking {
      */
     public function __construct(array $rawEntity) {
         $this->bookingId = $rawEntity['bookingId'];
-        $this->createdAt = strtotime($rawEntity['createdAt']);
+        $this->createdAt = strtotime($rawEntity['createdAt']) * 1000;
 
         // Undo aliases
         $rawEntity['id'] = $rawEntity['userId'];
