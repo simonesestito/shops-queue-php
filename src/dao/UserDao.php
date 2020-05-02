@@ -83,8 +83,8 @@ class UserDao extends Dao {
     public function getUsers(int $offset, int $limit, string $query = ''): array {
         $sql = "SELECT SQL_CALC_FOUND_ROWS *
                 FROM UserWithRole
-                WHERE (name + ' ' + surname) LIKE ?
-                    OR (surname + ' ' + name) LIKE ?
+                WHERE CONCAT_WS(' ', name, surname) LIKE ?
+                    OR CONCAT_WS(' ', surname, name) LIKE ?  
                 LIMIT ?, ?";
         $data = $this->query($sql, ["%$query%", "%$query%", $offset, $limit]);
         $count = $this->query("SELECT FOUND_ROWS() AS c")[0]['c'];
