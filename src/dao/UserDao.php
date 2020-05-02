@@ -94,4 +94,13 @@ class UserDao extends Dao {
             'count' => $count,
         ];
     }
+
+    /**
+     * List the owners of a specific shop
+     * @param int $shopId
+     * @return array Array of the results
+     */
+    public function getOwnersOf(int $shopId) {
+        return $this->query("SELECT * FROM UserWithRole WHERE shopId = ?", [$shopId]);
+    }
 }

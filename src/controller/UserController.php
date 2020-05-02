@@ -29,6 +29,7 @@ class UserController extends BaseController {
         $this->registerRoute('/users/me', 'GET', '*', 'getCurrentUser');
         $this->registerRoute('/users/:id', 'GET', '*', 'getUserById');
         $this->registerRoute('/users/:id', 'DELETE', 'ADMIN', 'deleteUser');
+        $this->registerRoute('/shops/:shopId/owners', 'GET', 'ADMIN', 'getShopOwners');
     }
 
     /**
@@ -83,6 +84,15 @@ class UserController extends BaseController {
     }
 
     /**
+     * Get the currently logged in user
+     * @return User
+     * @throws AppHttpException
+     */
+    public function getCurrentUser() {
+        return $this->getUserById(AuthService::getAuthContext()['id']);
+    }
+
+    /**
      * Get a user by ID
      * @param $id int User id
      * @return User
@@ -103,20 +113,23 @@ class UserController extends BaseController {
     }
 
     /**
-     * Get the currently logged in user
-     * @return User
-     * @throws AppHttpException
-     */
-    public function getCurrentUser() {
-        return $this->getUserById(AuthService::getAuthContext()['id']);
-    }
-
-    /**
      * Delete a user
      * @param $id int User ID
      */
     public function deleteUser(int $id) {
         $this->userDao->deleteUser($id);
+    }
+
+    /**
+     * Get the owners of a shop
+     * @param $shopId int
+     * @return User[]
+     */
+    public function getShopOwners(int $shopId) {
+        $entities = $this->userDao->getOwnersOf($shopId);
+        return array_map(function ($e) {
+            return new User($e);
+        }, $entities);
     }
 }
 
