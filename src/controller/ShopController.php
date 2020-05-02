@@ -51,10 +51,11 @@ class ShopController extends BaseController {
      * @return Page Page of Shops
      */
     public function listShops() {
+        $query = isset($_GET['query']) ? $_GET['query'] : '';
         $page = isset($_GET['page']) ? intval($_GET['page']) : 0;
         $offset = $page * PAGINATION_PAGE_SIZE;
 
-        $daoResult = $this->shopDao->listShops($offset, PAGINATION_PAGE_SIZE);
+        $daoResult = $this->shopDao->listShops($offset, PAGINATION_PAGE_SIZE, $query);
         $objects = array_map(function ($e) {
             return new Shop($e);
         }, $daoResult['data']);

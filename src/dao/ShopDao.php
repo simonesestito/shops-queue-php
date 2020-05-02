@@ -61,10 +61,12 @@ class ShopDao extends Dao {
      * It uses pagination
      * @param int $offset
      * @param int $limit
+     * @param string $query
      * @return array Associative array. Key 'count' has the total rows count, 'data' has the actual result
      */
-    public function listShops(int $offset, int $limit) {
-        $data = $this->query("SELECT SQL_CALC_FOUND_ROWS * FROM ShopWithCount ORDER BY name LIMIT ?, ?", [$offset, $limit]);
+    public function listShops(int $offset, int $limit, string $query = '') {
+        $data = $this->query("SELECT SQL_CALC_FOUND_ROWS * FROM ShopWithCount WHERE name LIKE ? ORDER BY name LIMIT ?, ?",
+            ["%$query%", $offset, $limit]);
         $count = $this->query("SELECT FOUND_ROWS() AS c")[0]['c'];
 
         return [
@@ -104,7 +106,7 @@ class ShopDao extends Dao {
      * @param string $query Filter by name
      * @return array Associative array. Key 'count' has the total rows count, 'data' has the actual result
      */
-    public function findShops(float $fromLat, float $fromLon, int $offset, int $limit, string $query): array {
+    public function findShops(float $fromLat, float $fromLon, int $offset, int $limit, string $query = ''): array {
         $sql = "
         SELECT SQL_CALC_FOUND_ROWS *, DISTANCE_KM(?, ?, longitude, latitude) AS distance
         FROM ShopWithCount
