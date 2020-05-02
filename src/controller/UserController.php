@@ -31,6 +31,7 @@ class UserController extends BaseController {
         $this->registerRoute('/users/:id', 'DELETE', 'ADMIN', 'deleteUser');
         $this->registerRoute('/shops/:shopId/owners', 'GET', 'ADMIN', 'getShopOwners');
         $this->registerRoute('/shops/:shopId/owners/:userId', 'PUT', 'ADMIN', 'addOwnerToShop');
+        $this->registerRoute('/shops/:shopId/owners/:userId', 'DELETE', 'ADMIN', 'deleteOwnerFromShop');
     }
 
     /**
@@ -146,6 +147,15 @@ class UserController extends BaseController {
             throw new AppHttpException(HTTP_BAD_REQUEST);
 
         $this->userDao->addOwnerToShop($userId, $shopId);
+    }
+
+    /**
+     * Delete a user as a owner of a shop
+     * @param $shopId int
+     * @param $userId int
+     */
+    public function deleteOwnerFromShop(int $shopId, int $userId) {
+        $this->userDao->deleteOwnerFromShop($userId, $shopId);
     }
 }
 

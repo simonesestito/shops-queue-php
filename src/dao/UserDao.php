@@ -105,11 +105,20 @@ class UserDao extends Dao {
     }
 
     /**
-     * Add a owner to a specific shop
+     * Add an owner to a specific shop
      * @param int $userId
      * @param int $shopId
      */
     public function addOwnerToShop(int $userId, int $shopId) {
         $this->query("UPDATE User SET shopId = ? WHERE id = ?", [$shopId, $userId]);
+    }
+
+    /**
+     * Remove an owner from a specific shop
+     * @param int $userId
+     * @param int $shopId
+     */
+    public function deleteOwnerFromShop(int $userId, int $shopId) {
+        $this->query("UPDATE User SET shopId = null WHERE shopId = ? AND id = ?", [$shopId, $userId]);
     }
 }
