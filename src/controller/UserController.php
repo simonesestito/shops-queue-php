@@ -29,9 +29,6 @@ class UserController extends BaseController {
         $this->registerRoute('/users/me', 'GET', '*', 'getCurrentUser');
         $this->registerRoute('/users/:id', 'GET', '*', 'getUserById');
         $this->registerRoute('/users/:id', 'DELETE', 'ADMIN', 'deleteUser');
-        $this->registerRoute('/shops/:shopId/owners', 'GET', 'ADMIN', 'getShopOwners');
-        $this->registerRoute('/shops/:shopId/owners/:userId', 'PUT', 'ADMIN', 'addOwnerToShop');
-        $this->registerRoute('/shops/:shopId/owners/:userId', 'DELETE', 'ADMIN', 'deleteOwnerFromShop');
     }
 
     /**
@@ -120,42 +117,6 @@ class UserController extends BaseController {
      */
     public function deleteUser(int $id) {
         $this->userDao->deleteUser($id);
-    }
-
-    /**
-     * Get the owners of a shop
-     * @param $shopId int
-     * @return User[]
-     */
-    public function getShopOwners(int $shopId) {
-        $entities = $this->userDao->getOwnersOf($shopId);
-        return array_map(function ($e) {
-            return new User($e);
-        }, $entities);
-    }
-
-    /**
-     * Add a user as a owner of a shop
-     * It must already be of type OWNER
-     * @param $shopId int
-     * @param $userId int
-     * @throws AppHttpException
-     */
-    public function addOwnerToShop(int $shopId, int $userId) {
-        $user = $this->userDao->getUserById($userId);
-        if ($user['role'] !== 'OWNER')
-            throw new AppHttpException(HTTP_BAD_REQUEST);
-
-        $this->userDao->addOwnerToShop($userId, $shopId);
-    }
-
-    /**
-     * Delete a user as a owner of a shop
-     * @param $shopId int
-     * @param $userId int
-     */
-    public function deleteOwnerFromShop(int $shopId, int $userId) {
-        $this->userDao->deleteOwnerFromShop($userId, $shopId);
     }
 }
 

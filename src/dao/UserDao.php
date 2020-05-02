@@ -94,31 +94,4 @@ class UserDao extends Dao {
             'count' => $count,
         ];
     }
-
-    /**
-     * List the owners of a specific shop
-     * @param int $shopId
-     * @return array Array of the results
-     */
-    public function getOwnersOf(int $shopId) {
-        return $this->query("SELECT * FROM UserWithRole WHERE shopId = ?", [$shopId]);
-    }
-
-    /**
-     * Add an owner to a specific shop
-     * @param int $userId
-     * @param int $shopId
-     */
-    public function addOwnerToShop(int $userId, int $shopId) {
-        $this->query("UPDATE User SET shopId = ? WHERE id = ?", [$shopId, $userId]);
-    }
-
-    /**
-     * Remove an owner from a specific shop
-     * @param int $userId
-     * @param int $shopId
-     */
-    public function deleteOwnerFromShop(int $userId, int $shopId) {
-        $this->query("UPDATE User SET shopId = null WHERE shopId = ? AND id = ?", [$shopId, $userId]);
-    }
 }
