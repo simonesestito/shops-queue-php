@@ -30,6 +30,7 @@ class UserController extends BaseController {
         $this->registerRoute('/users/:id', 'GET', '*', 'getUserById');
         $this->registerRoute('/users/:id', 'DELETE', 'ADMIN', 'deleteUser');
         $this->registerRoute('/shops/:shopId/owners', 'GET', 'ADMIN', 'getShopOwners');
+        $this->registerRoute('/shops/:shopId/owners/:userId', 'PUT', 'ADMIN', 'addOwnerToShop');
     }
 
     /**
@@ -130,6 +131,21 @@ class UserController extends BaseController {
         return array_map(function ($e) {
             return new User($e);
         }, $entities);
+    }
+
+    /**
+     * Add a user as a owner of a shop
+     * It must already be of type OWNER
+     * @param $shopId int
+     * @param $userId int
+     * @throws AppHttpException
+     */
+    public function addOwnerToShop(int $shopId, int $userId) {
+        $user = $this->userDao->getUserById($userId);
+        if ($user['role'] !== 'OWNER')
+            throw new AppHttpException(HTTP_BAD_REQUEST);
+
+        $this->userDao->addOwnerToShop($userId, $shopId);
     }
 }
 

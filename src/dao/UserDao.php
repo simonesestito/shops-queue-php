@@ -103,4 +103,13 @@ class UserDao extends Dao {
     public function getOwnersOf(int $shopId) {
         return $this->query("SELECT * FROM UserWithRole WHERE shopId = ?", [$shopId]);
     }
+
+    /**
+     * Add a owner to a specific shop
+     * @param int $userId
+     * @param int $shopId
+     */
+    public function addOwnerToShop(int $userId, int $shopId) {
+        $this->query("UPDATE User SET shopId = ? WHERE id = ?", [$shopId, $userId]);
+    }
 }
