@@ -65,16 +65,18 @@ class UserController extends BaseController {
      * Accepted GET params:
      * - page: the page number, to use pagination
      * - query: By name
+     * - shopId
      *
      * @return Page Page of User objects
      */
     public function listUsers(): Page {
         $page = isset($_GET['page']) ? intval($_GET['page']) : 0;
+        $shopId = isset($_GET['shopId']) ? intval($_GET['shopId']) : 0;
         $query = isset($_GET['query']) ? $_GET['query'] : '';
 
         $offset = $page * PAGINATION_PAGE_SIZE;
 
-        $daoResult = $this->userDao->getUsers($offset, PAGINATION_PAGE_SIZE, $query);
+        $daoResult = $this->userDao->getUsers($offset, PAGINATION_PAGE_SIZE, $query, $shopId);
         $objects = array_map(function ($e) {
             return new User($e);
         }, $daoResult['data']);
