@@ -77,28 +77,16 @@ class UserDao extends Dao {
      * List users using pagination
      * @param int $offset Number of items to skip
      * @param int $limit Max number of items to return
-     * @param string|null $role Search by role
-     * @param int|null $shopId Search by shop ID
+     * @param string $query Search by name
      * @return array Associative array. Key 'count' has the total rows count, 'data' has the actual result
      */
-    public function getUsers(int $offset, int $limit, string $role = null, int $shopId = null): array {
-        $params = [];
-
-        $sql = "SELECT SQL_CALC_FOUND_ROWS * FROM UserWithRole WHERE 1";
-        if ($role !== null) {
-            $sql .= " AND role = ?";
-            $params[] = $role;
-        }
-        if ($shopId !== null) {
-            $sql .= ' AND shopId = ?';
-            $params[] = $shopId;
-        }
-
-        $sql .= " LIMIT ?, ?";
-        $params[] = $offset;
-        $params[] = $limit;
-
-        $data = $this->query($sql, $params);
+    public function getUsers(int $offset, int $limit, string $query = ''): array {
+        $sql = "SELECT SQL_CALC_FOUND_ROWS *
+                FROM UserWithRole
+                WHERE (name + ' ' + surname) LIKE ?
+                    OR (surname + ' ' + name) LIKE ?
+                LIMIT ?, ?";
+        $data = $this->query($sql, ["%$query%", "%$query%", $offset, $limit]);
         $count = $this->query("SELECT FOUND_ROWS() AS c")[0]['c'];
 
         return [

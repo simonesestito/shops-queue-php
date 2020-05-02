@@ -64,26 +64,17 @@ class UserController extends BaseController {
      *
      * Accepted GET params:
      * - page: the page number, to use pagination
-     * - role
-     * - shopId
+     * - query: By name
      *
      * @return Page Page of User objects
      */
     public function listUsers(): Page {
-        // Validate required get params
-        $this->validator->validate([
-            'page' => Validator::optional(Validator::filterAs(FILTER_VALIDATE_INT)),
-            'role' => Validator::optional(Validator::isIn(DB_USER_ROLES)),
-            'shopId' => Validator::optional(Validator::filterAs(FILTER_VALIDATE_INT)),
-        ], $_GET);
-
         $page = isset($_GET['page']) ? intval($_GET['page']) : 0;
-        $role = @$_GET['role'];
-        $shopId = isset($_GET['shopId']) ? intval($_GET['shopId']) : null;
+        $query = isset($_GET['query']) ? $_GET['query'] : '';
 
         $offset = $page * PAGINATION_PAGE_SIZE;
 
-        $daoResult = $this->userDao->getUsers($offset, PAGINATION_PAGE_SIZE, $role, $shopId);
+        $daoResult = $this->userDao->getUsers($offset, PAGINATION_PAGE_SIZE, $query);
         $objects = array_map(function ($e) {
             return new User($e);
         }, $daoResult['data']);
