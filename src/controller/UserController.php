@@ -29,6 +29,7 @@ class UserController extends BaseController {
         $this->registerRoute('/users/me', 'GET', '*', 'getCurrentUser');
         $this->registerRoute('/users/:id', 'GET', '*', 'getUserById');
         $this->registerRoute('/users/:id', 'DELETE', 'ADMIN', 'deleteUser');
+        $this->registerRoute('/users/:id', 'PUT', 'ADMIN', 'updateUser');
     }
 
     /**
@@ -119,6 +120,25 @@ class UserController extends BaseController {
      */
     public function deleteUser(int $id) {
         $this->userDao->deleteUser($id);
+    }
+
+    /**
+     * Update a user
+     * @param int $id User ID
+     * @param UserUpdate $update
+     * @return User Updated user
+     * @throws AppHttpException
+     */
+    public function updateUser(int $id, UserUpdate $update) {
+        // Check role and shop ID
+        $isOwner = $update->role === 'OWNER';
+        $shopDefined = $update->shopId !== null;
+        if ($isOwner !== $shopDefined) {
+            throw new AppHttpException(HTTP_BAD_REQUEST);
+        }
+
+        $this->userDao->updateUser($id, $update);
+        return new User($this->userDao->getUserById($id));
     }
 }
 

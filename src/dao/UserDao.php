@@ -24,20 +24,12 @@ class UserDao extends Dao {
      * @return int ID of the newly created user
      */
     public function insertNewUser(NewUser $newUser) {
-        // Find the ID of the given role
-        $role = $newUser->role;
-        $roles = $this->query("SELECT * FROM Role WHERE name = ?", [$role]);
-        if (empty($roles)) {
-            throw new RuntimeException("Unable to find role: $role");
-        }
-        $roleId = $roles[0]['id'];
-
         $params = [
             $newUser->name,
             $newUser->surname,
             $newUser->email,
             password_hash($newUser->password, PASSWORD_BCRYPT),
-            $roleId,
+            $this->getRoleId($newUser->role),
             $newUser->shopId,
         ];
 
@@ -104,5 +96,48 @@ class UserDao extends Dao {
             'data' => $data,
             'count' => $count,
         ];
+    }
+
+    /**
+     * Update a user
+     * @param int $id User ID
+     * @param UserUpdate $update
+     * @noinspection SqlWithoutWhere
+     */
+    public function updateUser(int $id, UserUpdate $update) {
+        $roleId = $this->getRoleId($update->role);
+
+        $sql = "UPDATE User
+        SET name = ?,
+        surname = ?,
+        email = ?,
+        roleId = ?,
+        shopId = ?";
+        $params = [$update->name, $update->surname, $update->email, $roleId, $update->shopId];
+
+        // Handle password edit
+        if ($update->password !== null) {
+            $update->password = password_hash($update->password, PASSWORD_BCRYPT);
+            $sql .= ", password = ?";
+            $params[] = $update->password;
+        }
+
+        $sql .= " WHERE id = ?";
+        $params[] = $id;
+
+        $this->query($sql, $params);
+    }
+
+    /**
+     * Find the ID of the given role
+     * @param string $role
+     * @return int
+     */
+    private function getRoleId(string $role): int {
+        $roles = $this->query("SELECT * FROM Role WHERE name = ?", [$role]);
+        if (empty($roles)) {
+            throw new RuntimeException("Unable to find role: $role");
+        }
+        return $roles[0]['id'];
     }
 }
