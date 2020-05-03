@@ -24,6 +24,7 @@ class BookingController extends BaseController {
         $this->bookingDao = $bookingDao;
         $this->registerRoute('/shops/:shopId/bookings', 'POST', 'USER', 'addBookingToShop');
         $this->registerRoute('/shops/:shopId/bookings', 'GET', '*', 'getBookingsByShop');
+        $this->registerRoute('/shops/:shopId/bookings', 'DELETE', 'OWNER', 'deleteBookingsByShop');
         $this->registerRoute('/shops/:shopId/bookings/next', 'POST', 'OWNER', 'callNextUser');
         $this->registerRoute('/users/:userId/bookings', 'GET', '*', 'getBookingsByUser');
         $this->registerRoute('/bookings/:id', 'DELETE', '*', 'deleteBooking');
@@ -117,6 +118,19 @@ class BookingController extends BaseController {
             return null;
 
         return new Booking($calledUser);
+    }
+
+    /**
+     * Cancel and delete all the bookings for a given shop
+     * @param int $shopId
+     * @throws AppHttpException
+     */
+    public function deleteBookingsByShop(int $shopId) {
+        $authShopId = AuthService::getAuthContext()['shopId'];
+        if ($shopId !== $authShopId)
+            throw new AppHttpException(HTTP_NOT_AUTHORIZED);
+
+        $this->bookingDao->deleteBookingsByShop($shopId);
     }
 }
 

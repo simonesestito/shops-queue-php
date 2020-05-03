@@ -117,4 +117,12 @@ class BookingDao extends Dao {
             }
         }
     }
+
+    /**
+     * Delete all the bookings for a specific shop
+     * @param int $shopId
+     */
+    public function deleteBookingsByShop(int $shopId) {
+        $this->query("DELETE FROM Booking WHERE shopId = ?", [$shopId]);
+    }
 }
