@@ -73,7 +73,7 @@ class UserDao extends Dao {
      * @param int|null $shopId Search by shop ID
      * @return array Associative array. Key 'count' has the total rows count, 'data' has the actual result
      */
-    public function getUsers(int $offset, int $limit, string $query, int $shopId): array {
+    public function getUsers(int $offset, int $limit, string $query, $shopId): array {
         $params = ["%$query%", "%$query%"];
         $sql = "SELECT SQL_CALC_FOUND_ROWS *
                 FROM UserWithRole

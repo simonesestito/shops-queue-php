@@ -72,7 +72,7 @@ class UserController extends BaseController {
      */
     public function listUsers(): Page {
         $page = isset($_GET['page']) ? intval($_GET['page']) : 0;
-        $shopId = isset($_GET['shopId']) ? intval($_GET['shopId']) : 0;
+        $shopId = isset($_GET['shopId']) ? intval($_GET['shopId']) : null;
         $query = isset($_GET['query']) ? $_GET['query'] : '';
 
         $offset = $page * PAGINATION_PAGE_SIZE;
