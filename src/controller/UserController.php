@@ -35,10 +35,10 @@ class UserController extends BaseController {
     /**
      * Create a new user
      * @param NewUser $newUser
-     * @return User
+     * @return UserDetails
      * @throws AppHttpException If admin required
      */
-    public function signupUser(NewUser $newUser): User {
+    public function signupUser(NewUser $newUser): UserDetails {
         // Admin check
         $adminRequired = $newUser->role !== 'USER';
         if ($adminRequired) {
@@ -56,7 +56,7 @@ class UserController extends BaseController {
         }
 
         $userId = $this->userDao->insertNewUser($newUser);
-        return new User($this->userDao->getUserById($userId));
+        return new UserDetails($this->userDao->getUserById($userId));
     }
 
 
@@ -68,7 +68,7 @@ class UserController extends BaseController {
      * - query: By name
      * - shopId
      *
-     * @return Page Page of User objects
+     * @return Page Page of UserDetails objects
      */
     public function listUsers(): Page {
         $page = isset($_GET['page']) ? intval($_GET['page']) : 0;
@@ -79,7 +79,7 @@ class UserController extends BaseController {
 
         $daoResult = $this->userDao->getUsers($offset, PAGINATION_PAGE_SIZE, $query, $shopId);
         $objects = array_map(function ($e) {
-            return new User($e);
+            return new UserDetails($e);
         }, $daoResult['data']);
 
         return new Page($page, $daoResult['count'], $objects);
@@ -87,7 +87,7 @@ class UserController extends BaseController {
 
     /**
      * Get the currently logged in user
-     * @return User
+     * @return UserDetails
      * @throws AppHttpException
      */
     public function getCurrentUser() {
@@ -97,7 +97,7 @@ class UserController extends BaseController {
     /**
      * Get a user by ID
      * @param $id int User id
-     * @return User
+     * @return UserDetails
      * @throws AppHttpException
      */
     public function getUserById(int $id) {
@@ -111,7 +111,7 @@ class UserController extends BaseController {
             throw new AppHttpException(HTTP_NOT_FOUND);
         }
 
-        return new User($entity);
+        return new UserDetails($entity);
     }
 
     /**
@@ -126,7 +126,7 @@ class UserController extends BaseController {
      * Update a user
      * @param int $id User ID
      * @param UserUpdate $update
-     * @return User Updated user
+     * @return UserDetails Updated user
      * @throws AppHttpException
      */
     public function updateUser(int $id, UserUpdate $update) {
@@ -138,7 +138,7 @@ class UserController extends BaseController {
         }
 
         $this->userDao->updateUser($id, $update);
-        return new User($this->userDao->getUserById($id));
+        return new UserDetails($this->userDao->getUserById($id));
     }
 }
 

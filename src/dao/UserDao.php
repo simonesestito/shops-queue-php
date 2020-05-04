@@ -48,20 +48,20 @@ class UserDao extends Dao {
     /**
      * Find a user by his email address
      * @param string $email
-     * @return array|null Single associative array
+     * @return array|null Single associative array of UserDetails records
      */
     public function getUserByEmail(string $email) {
-        $records = $this->query("SELECT * FROM UserWithRole WHERE email = ?", [$email]);
+        $records = $this->query("SELECT * FROM UserDetails WHERE email = ?", [$email]);
         return @$records[0];
     }
 
     /**
      * Find a user by ID
      * @param int $id
-     * @return array|null Single associative array
+     * @return array|null Single associative array of UserDetails records
      */
     public function getUserById(int $id) {
-        $records = $this->query("SELECT * FROM UserWithRole WHERE id = ?", [$id]);
+        $records = $this->query("SELECT * FROM UserDetails WHERE id = ?", [$id]);
         return @$records[0];
     }
 
@@ -71,12 +71,12 @@ class UserDao extends Dao {
      * @param int $limit Max number of items to return
      * @param string $query Search by name
      * @param int|null $shopId Search by shop ID
-     * @return array Associative array. Key 'count' has the total rows count, 'data' has the actual result
+     * @return array Associative array of UserDetails records. Key 'count' has the total rows count, 'data' has the actual result
      */
     public function getUsers(int $offset, int $limit, string $query, $shopId): array {
         $params = ["%$query%", "%$query%"];
         $sql = "SELECT SQL_CALC_FOUND_ROWS *
-                FROM UserWithRole
+                FROM UserDetails
                 WHERE ( CONCAT_WS(' ', name, surname) LIKE ?
                     OR CONCAT_WS(' ', surname, name) LIKE ? )";
 

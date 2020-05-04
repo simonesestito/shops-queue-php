@@ -17,15 +17,31 @@
  * along with Shops Queue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Response of a login request
- */
-class AuthResponse {
-    public $user;
-    public $accessToken;
 
-    public function __construct(UserDetails $user, string $accessToken) {
-        $this->user = $user;
-        $this->accessToken = $accessToken;
+/**
+ * Class UserDetails
+ * A subclass of User which includes full information about the shop
+ */
+class UserDetails extends User {
+    public $shop;
+
+    /**
+     * UserDetails constructor.
+     * @param array $entity An array of the UserDetails SQL view records.
+     */
+    public function __construct(array $entity) {
+        parent::__construct($entity);
+
+        if ($this->shopId !== null) {
+            // Revert SQL aliases
+            $shopData = $entity;
+            $shopData['name'] = $entity['shopName'];
+            $shopData['count'] = $entity['shopBookingsCount'];
+            $shopData['id'] = $entity['shopId'];
+
+            $this->shop = new Shop($shopData);
+        } else {
+            $this->shop = null;
+        }
     }
 }

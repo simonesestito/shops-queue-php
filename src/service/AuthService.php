@@ -55,7 +55,7 @@ class AuthService {
             'accessToken' => $hashedToken,
         ];
         $this->sessionDao->createNewSession($newSession);
-        $user = new User($userEntity);
+        $user = new UserDetails($userEntity);
         // Return the real token to the client
         return new AuthResponse($user, $realToken);
     }

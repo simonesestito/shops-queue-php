@@ -100,6 +100,13 @@ CREATE TABLE Favourites
 
 SET FOREIGN_KEY_CHECKS = 1;
 
+DROP VIEW IF EXISTS ShopWithCount;
+CREATE VIEW ShopWithCount AS
+SELECT Shop.*, COUNT(Booking.userId) AS count
+FROM Shop
+         LEFT JOIN Booking ON Shop.id = Booking.shopId
+GROUP BY Shop.id;
+
 DROP VIEW IF EXISTS UserWithRole;
 CREATE VIEW UserWithRole AS
 SELECT User.*,
@@ -107,12 +114,18 @@ SELECT User.*,
 FROM User
          JOIN Role ON User.roleId = Role.id;
 
-DROP VIEW IF EXISTS ShopWithCount;
-CREATE VIEW ShopWithCount AS
-SELECT Shop.*, COUNT(Booking.userId) AS count
-FROM Shop
-         LEFT JOIN Booking ON Shop.id = Booking.shopId
-GROUP BY Shop.id;
+DROP VIEW IF EXISTS UserDetails;
+CREATE VIEW UserDetails AS
+SELECT UserWithRole.*,
+       ShopWithCount.name  AS shopName,
+       ShopWithCount.city,
+       ShopWithCount.address,
+       ShopWithCount.longitude,
+       ShopWithCount.latitude,
+       ShopWithCount.count AS shopBookingsCount
+FROM UserWithRole
+         JOIN Role ON UserWithRole.roleId = Role.id
+         LEFT JOIN ShopWithCount ON UserWithRole.shopId = ShopWithCount.id;
 
 DROP VIEW IF EXISTS BookingDetail;
 CREATE VIEW BookingDetail AS
@@ -139,9 +152,9 @@ DROP VIEW IF EXISTS SessionDetail;
 CREATE VIEW SessionDetail AS
 SELECT Session.id AS sessionId,
        Session.accessToken,
-       UserWithRole.*
+       UserDetails.*
 FROM Session
-         JOIN UserWithRole ON Session.userId = UserWithRole.id;
+         JOIN UserDetails ON Session.userId = UserDetails.id;
 
 -- Apply the haversine formula to calculate
 -- the distance between 2 points on Earth in KMs
