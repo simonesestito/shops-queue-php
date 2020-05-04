@@ -17,7 +17,7 @@
  * along with Shops Queue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-define('ACCESS_TOKEN_BITS_LENGTH', 256);
+define('ACCESS_TOKEN_BITS_LENGTH', 512);
 
 class AuthService {
     private $userDao;
@@ -46,15 +46,18 @@ class AuthService {
         }
 
         // Login successful, create a new session
+        $realToken = $this->generateToken(ACCESS_TOKEN_BITS_LENGTH);
+        $hashedToken = base64_encode(hash('sha512', $realToken, true));
+
         $newSession = [
             'userId' => $userEntity['id'],
-            'accessToken' => $this->generateToken(ACCESS_TOKEN_BITS_LENGTH),
+            // Store the hashed token in the database
+            'accessToken' => $hashedToken,
         ];
-        $createdSessionId = $this->sessionDao->createNewSession($newSession);
-        $createdSession = $this->sessionDao->getSessionById($createdSessionId);
-
+        $this->sessionDao->createNewSession($newSession);
         $user = new User($userEntity);
-        return new AuthResponse($user, $createdSession['accessToken']);
+        // Return the real token to the client
+        return new AuthResponse($user, $realToken);
     }
 
     /**
@@ -69,7 +72,8 @@ class AuthService {
         }
 
         // Validate access token
-        $sessionInfo = $this->sessionDao->getSessionByAccessToken($accessToken);
+        $hashedToken = base64_encode(hash('sha512', $accessToken, true));
+        $sessionInfo = $this->sessionDao->getSessionByAccessToken($hashedToken);
         if ($sessionInfo == null) {
             // Invalid access token
             return null;
