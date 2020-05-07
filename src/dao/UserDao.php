@@ -78,15 +78,14 @@ class UserDao extends Dao {
         $sql = "SELECT SQL_CALC_FOUND_ROWS *
                 FROM UserDetails
                 WHERE ( CONCAT_WS(' ', name, surname) LIKE ?
-                    OR CONCAT_WS(' ', surname, name) LIKE ? )
-                ORDER BY surname, name";
+                    OR CONCAT_WS(' ', surname, name) LIKE ? )";
 
         if ($shopId !== null) {
             $sql .= ' AND shopId = ?';
             $params[] = $shopId;
         }
 
-        $sql .= ' LIMIT ?, ?';
+        $sql .= ' ORDER BY surname, name LIMIT ?, ?';
         $params[] = $offset;
         $params[] = $limit;
 
