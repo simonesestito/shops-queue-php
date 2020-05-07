@@ -85,7 +85,7 @@ class UserDao extends Dao {
             $params[] = $shopId;
         }
 
-        $sql .= ' ORDER BY surname, name LIMIT ?, ?';
+        $sql .= ' ORDER BY surname, name, id LIMIT ?, ?';
         $params[] = $offset;
         $params[] = $limit;
 
