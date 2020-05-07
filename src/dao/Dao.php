@@ -36,6 +36,10 @@ class Dao {
      */
     protected function query(string $query, array $params = []) {
         $statement = $this->db->prepare($query);
+        if ($statement === false) {
+            throw new RuntimeException($this->db->error);
+        }
+
         if (!empty($params)) {
             $types = '';
             foreach ($params as $param) {

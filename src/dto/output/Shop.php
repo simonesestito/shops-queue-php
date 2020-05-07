@@ -23,7 +23,6 @@ class Shop {
     public $latitude;
     public $address;
     public $name;
-    public $city;
     public $count;
 
     /**
@@ -36,7 +35,6 @@ class Shop {
         $this->longitude = $entity['longitude'];
         $this->address = $entity['address'];
         $this->name = $entity['name'];
-        $this->city = $entity['city'];
         $this->count = $entity['count'];
     }
 }

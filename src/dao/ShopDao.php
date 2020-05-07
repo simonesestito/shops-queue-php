@@ -24,12 +24,11 @@ class ShopDao extends Dao {
      * @return int New record's ID
      */
     public function insertNewShop(NewShop $newShop): int {
-        return $this->query("INSERT INTO Shop (latitude, longitude, address, name, city) VALUES (?, ?, ?, ?, ?)", [
+        return $this->query("INSERT INTO Shop (latitude, longitude, address, name) VALUES (?, ?, ?, ?)", [
             $newShop->latitude,
             $newShop->longitude,
             $newShop->address,
-            $newShop->name,
-            $newShop->city
+            $newShop->name
         ]);
     }
 
@@ -43,15 +42,13 @@ class ShopDao extends Dao {
                 SET latitude = ?,
                 longitude = ?,
                 address = ?,
-                name = ?,
-                city = ?
+                name = ?
                 WHERE id = ?";
         $this->query($sql, [
             $newShop->latitude,
             $newShop->longitude,
             $newShop->address,
             $newShop->name,
-            $newShop->city,
             $id
         ]);
     }

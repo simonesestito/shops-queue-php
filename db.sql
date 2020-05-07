@@ -37,8 +37,7 @@ CREATE TABLE Shop
     latitude  FLOAT(10, 6) NOT NULL,
     longitude FLOAT(10, 6) NOT NULL,
     address   VARCHAR(255) NOT NULL,
-    name      VARCHAR(255) NOT NULL,
-    city      VARCHAR(255) NOT NULL
+    name VARCHAR(255) NOT NULL
 );
 
 DROP TABLE IF EXISTS User;
@@ -118,7 +117,6 @@ DROP VIEW IF EXISTS UserDetails;
 CREATE VIEW UserDetails AS
 SELECT UserWithRole.*,
        ShopWithCount.name  AS shopName,
-       ShopWithCount.city,
        ShopWithCount.address,
        ShopWithCount.longitude,
        ShopWithCount.latitude,
@@ -141,7 +139,6 @@ SELECT Booking.id         AS bookingId,
        ShopWithCount.latitude,
        ShopWithCount.longitude,
        ShopWithCount.address,
-       ShopWithCount.city,
        ShopWithCount.count
 FROM Booking
          JOIN UserWithRole ON Booking.userId = UserWithRole.id
