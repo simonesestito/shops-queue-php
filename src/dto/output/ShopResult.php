@@ -17,11 +17,18 @@
  * along with Shops Queue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class ShopWithDistance extends Shop {
+/**
+ * Class ShopResult
+ * It extends the Shop class adding additional information
+ * This class should be preferred over Shop, for example, in the user's search results
+ */
+class ShopResult extends Shop {
     public $distance; // KMs
+    public $isFavourite; // The current user included this shop in its favourites
 
     public function __construct(array $entity) {
         parent::__construct($entity);
         $this->distance = $entity['distance'];
+        $this->isFavourite = $entity['isFavourite'] ? true : false;
     }
 }

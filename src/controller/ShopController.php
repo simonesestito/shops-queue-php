@@ -70,7 +70,7 @@ class ShopController extends BaseController {
      * - lon: the user's Y coordinate
      *
      * To search by name, you can use an additional "query" GET param.
-     * @return ShopWithDistance[]
+     * @return ShopResult[]
      */
     public function findNearShops(): array {
         // Validate required get params
@@ -84,9 +84,10 @@ class ShopController extends BaseController {
         $lon = floatval($_GET['lon']);
         $query = isset($_GET['query']) ? trim($_GET['query']) : '';
 
-        $daoResult = $this->shopDao->findShops($lat, $lon, $query);
+        $userId = AuthService::getAuthContext()['id'];
+        $daoResult = $this->shopDao->findShops($lat, $lon, $userId, $query);
         return array_map(function ($e) {
-            return new ShopWithDistance($e);
+            return new ShopResult($e);
         }, $daoResult);
     }
 
