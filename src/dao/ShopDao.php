@@ -98,26 +98,18 @@ class ShopDao extends Dao {
      *
      * @param float $fromLat the user's latitude
      * @param float $fromLon the user's longitude
-     * @param int $offset Number of items to skip
-     * @param int $limit Max number of items to return
      * @param string $query Filter by name
-     * @return array Associative array. Key 'count' has the total rows count, 'data' has the actual result
+     * @return array ShopWithCount result, with "distance" field
      */
-    public function findShops(float $fromLat, float $fromLon, int $offset, int $limit, string $query = ''): array {
+    public function findShops(float $fromLat, float $fromLon, string $query = ''): array {
         $sql = "
-        SELECT SQL_CALC_FOUND_ROWS *, DISTANCE_KM(?, ?, longitude, latitude) AS distance
+        SELECT *, DISTANCE_KM(?, ?, longitude, latitude) AS distance
         FROM ShopWithCount
         WHERE name LIKE ?
         ORDER BY distance
-        LIMIT ?, ?
+        LIMIT ?
         ";
 
-        $data = $this->query($sql, [$fromLon, $fromLat, "%$query%", $offset, $limit]);
-        $count = $this->query("SELECT FOUND_ROWS() AS c")[0]['c'];
-
-        return [
-            'data' => $data,
-            'count' => $count,
-        ];
+        return $this->query($sql, [$fromLon, $fromLat, "%$query%", PAGINATION_PAGE_SIZE]);
     }
 }
