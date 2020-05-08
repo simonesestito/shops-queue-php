@@ -86,7 +86,7 @@ class BookingController extends BaseController {
 
         $entities = $this->bookingDao->getBookingsByUserId($userId);
         return array_map(function ($entity) {
-            return new Booking($entity);
+            return new BookingQueueCount($entity);
         }, $entities);
     }
 

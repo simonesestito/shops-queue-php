@@ -33,10 +33,10 @@ class BookingDao extends Dao {
     /**
      * Get all bookings made by a given user, sorted by creation date.
      * @param int $userId
-     * @return array BookingDetail records
+     * @return array BookingDetailQueueCount records
      */
     public function getBookingsByUserId(int $userId): array {
-        return $this->query("SELECT * FROM BookingDetail WHERE userId = ?", [$userId]);
+        return $this->query("SELECT * FROM BookingDetailQueueCount WHERE userId = ?", [$userId]);
     }
 
     /**
