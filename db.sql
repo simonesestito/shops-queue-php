@@ -145,6 +145,20 @@ FROM Booking
          JOIN ShopWithCount ON Booking.shopId = ShopWithCount.id
 ORDER BY Booking.createdAt;
 
+DROP VIEW IF EXISTS BookingDetailQueueCount;
+CREATE VIEW BookingDetailQueueCount AS
+SELECT BookingDetail.*, COALESCE(BookingQueueCount.queueCount, 0) AS queueCount
+FROM BookingDetail
+         LEFT JOIN (SELECT Booking.userId, Booking.shopId, COUNT(*) AS queueCount
+                    FROM Booking,
+                         (SELECT createdAt, shopId, userId FROM Booking) Booking2
+                    WHERE Booking.shopId = Booking2.shopId
+                      AND Booking.createdAt < Booking2.createdAt
+                    GROUP BY Booking.userId, Booking.shopId) BookingQueueCount
+                   ON BookingQueueCount.shopId = BookingDetail.bookingShopId
+                       AND BookingQueueCount.userId = BookingDetail.userId
+ORDER BY BookingDetail.createdAt;
+
 DROP VIEW IF EXISTS SessionDetail;
 CREATE VIEW SessionDetail AS
 SELECT Session.id AS sessionId,
