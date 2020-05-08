@@ -27,7 +27,6 @@ class ShopController extends BaseController {
         $this->registerRoute('/shops', 'GET', 'ADMIN', 'listShops');
         $this->registerRoute('/shops', 'POST', 'ADMIN', 'addNewShop');
         $this->registerRoute('/shops/nearby', 'GET', '*', 'findNearShops');
-        $this->registerRoute('/shops/me', 'GET', 'OWNER', 'getOwnShop');
         $this->registerRoute('/shops/:id', 'GET', '*', 'getShopById');
         $this->registerRoute('/shops/:id', 'PUT', 'ADMIN', 'updateShop');
         $this->registerRoute('/shops/:id', 'DELETE', 'ADMIN', 'deleteShop');
@@ -89,16 +88,6 @@ class ShopController extends BaseController {
         return array_map(function ($e) {
             return new ShopWithDistance($e);
         }, $daoResult);
-    }
-
-    /**
-     * Get the shop associated with the current shop owner
-     * @return Shop
-     * @throws AppHttpException
-     */
-    public function getOwnShop() {
-        $shopId = AuthService::getAuthContext()['shopId'];
-        return $this->getShopById($shopId);
     }
 
     /**
