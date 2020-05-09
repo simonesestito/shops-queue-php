@@ -115,6 +115,6 @@ class ShopDao extends Dao {
         LIMIT ?
         ";
 
-        return $this->query($sql, [$userId, $fromLon, $fromLat, "%$query%", PAGINATION_PAGE_SIZE]);
+        return $this->query($sql, [$fromLon, $fromLat, $userId, "%$query%", PAGINATION_PAGE_SIZE]);
     }
 }
