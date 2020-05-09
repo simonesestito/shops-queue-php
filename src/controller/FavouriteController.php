@@ -55,7 +55,10 @@ class FavouriteController extends BaseController {
         if ($authContext['role'] !== 'ADMIN' && $authContext['id'] !== $userId)
             throw new AppHttpException(HTTP_NOT_AUTHORIZED);
 
-        $this->favouritesDao->addFavourite($userId, $shopId);
+        try {
+            $this->favouritesDao->addFavourite($userId, $shopId);
+        } catch (DuplicateEntityException $e) {
+        }
     }
 
     /**
