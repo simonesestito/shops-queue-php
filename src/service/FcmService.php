@@ -17,6 +17,9 @@
  * along with Shops Queue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+define('FCM_TYPE_BOOKING_CANCELLED', 'booking-cancelled');
+define('FCM_TYPE_QUEUE_NOTICE', 'queue-notice');
+
 class FcmService {
     private $fcmDao;
 
