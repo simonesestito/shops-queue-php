@@ -117,6 +117,8 @@ class BookingController extends BaseController {
             // No users in the queue
             return null;
 
+        // TODO: Send notification to users
+
         return new Booking($calledUser);
     }
 
@@ -129,6 +131,8 @@ class BookingController extends BaseController {
         $authShopId = AuthService::getAuthContext()['shopId'];
         if ($shopId !== $authShopId)
             throw new AppHttpException(HTTP_NOT_AUTHORIZED);
+
+        // TODO: Send notification to users
 
         $this->bookingDao->deleteBookingsByShop($shopId);
     }
