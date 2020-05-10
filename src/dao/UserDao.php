@@ -28,7 +28,7 @@ class UserDao extends Dao {
             $newUser->name,
             $newUser->surname,
             $newUser->email,
-            $newUser->password
+            password_hash($newUser->password, PASSWORD_BCRYPT),
         ];
         return $this->query("INSERT INTO User (name, surname, email, password) VALUES (?, ?, ?, ?)", $params);
     }
