@@ -62,7 +62,7 @@ class ShopDao extends Dao {
      * @return array Associative array. Key 'count' has the total rows count, 'data' has the actual result
      */
     public function listShops(int $offset, int $limit, string $query = '') {
-        $data = $this->query("SELECT SQL_CALC_FOUND_ROWS * FROM ShopWithCount WHERE name LIKE ? ORDER BY name LIMIT ?, ?",
+        $data = $this->query("SELECT SQL_CALC_FOUND_ROWS * FROM ShopWithCount WHERE name LIKE ? ORDER BY name, address, id LIMIT ?, ?",
             ["%$query%", $offset, $limit]);
         $count = $this->query("SELECT FOUND_ROWS() AS c")[0]['c'];
 
