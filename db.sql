@@ -102,8 +102,8 @@ CREATE TABLE Favourites
 DROP TABLE IF EXISTS FcmToken;
 CREATE TABLE FcmToken
 (
-    token  VARCHAR(255) NOT NULL,
-    userId INT          NOT NULL,
+    token  VARCHAR(255) BINARY NOT NULL,
+    userId INT                 NOT NULL,
     PRIMARY KEY (token),
     FOREIGN KEY (userId) REFERENCES User (id)
         ON UPDATE CASCADE ON DELETE CASCADE
