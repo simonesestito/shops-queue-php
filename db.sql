@@ -54,6 +54,8 @@ CREATE TABLE User
     shopId   INT                   DEFAULT NULL,
     UNIQUE (email),
     FOREIGN KEY (roleID) REFERENCES Role (id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (shopId) REFERENCES Shop (id)
         ON UPDATE CASCADE ON DELETE CASCADE
 );
 
