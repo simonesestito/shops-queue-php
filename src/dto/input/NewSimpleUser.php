@@ -17,26 +17,25 @@
  * along with Shops Queue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Class NewUser
- * A user with special capabilities.
- * It can be added by an admin only
- */
-class NewUser extends NewSimpleUser {
-    public $shopId;
-    public $role;
+class NewSimpleUser {
+    public $name;
+    public $surname;
+    public $email;
+    public $password;
 
     public function __construct($rawArray) {
-        parent::__construct($rawArray);
         /** @var $validator Validator */
         $validator = getInstanceOf(Validator::class);
         $validator->validate([
-            // Optional. It's assigned when creating a shop owner account
-            'shopId' => Validator::optional('is_int'),
-            'role' => Validator::isIn(DB_USER_ROLES),
+            'name' => Validator::isString(3),
+            'surname' => Validator::isString(3),
+            'email' => Validator::filterAs(FILTER_VALIDATE_EMAIL),
+            'password' => Validator::isString(8),
         ], $rawArray);
 
-        $this->shopId = $rawArray['shopId'];
-        $this->role = is_null($rawArray['role']) ? 'USER' : $rawArray['role'];
+        $this->name = $rawArray['name'];
+        $this->surname = $rawArray['surname'];
+        $this->email = $rawArray['email'];
+        $this->password = $rawArray['password'];
     }
 }

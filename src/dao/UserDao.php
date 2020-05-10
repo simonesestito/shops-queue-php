@@ -19,6 +19,21 @@
 
 class UserDao extends Dao {
     /**
+     * Insert a new simple user in the database
+     * @param NewSimpleUser $newUser
+     * @return int ID of the newly created user
+     */
+    public function insertNewSimpleUser(NewSimpleUser $newUser): int {
+        $params = [
+            $newUser->name,
+            $newUser->surname,
+            $newUser->email,
+            $newUser->password
+        ];
+        return $this->query("INSERT INTO User (name, surname, email, password) VALUES (?, ?, ?, ?)", $params);
+    }
+
+    /**
      * Insert a new user account
      * @param NewUser $newUser
      * @return int ID of the newly created user

@@ -25,7 +25,7 @@ class UserController extends BaseController {
         $this->userDao = $userDao;
         $this->validator = $validator;
         $this->registerRoute('/users', 'GET', 'ADMIN', 'listUsers');
-        $this->registerRoute('/users', 'POST', null, 'signupUser');
+        $this->registerRoute('/users', 'POST', 'ADMIN', 'signupUser');
         $this->registerRoute('/users/me', 'GET', '*', 'getCurrentUser');
         $this->registerRoute('/users/:id', 'GET', '*', 'getUserById');
         $this->registerRoute('/users/:id', 'DELETE', 'ADMIN', 'deleteUser');
@@ -36,20 +36,9 @@ class UserController extends BaseController {
      * Create a new user
      * @param NewUser $newUser
      * @return UserDetails
-     * @throws AppHttpException If admin required
+     * @throws AppHttpException
      */
     public function signupUser(NewUser $newUser): UserDetails {
-        // Admin check
-        $adminRequired = $newUser->role !== 'USER';
-        if ($adminRequired) {
-            // Only admins can create users with roles different from USER
-            $authContext = AuthService::getAuthContext();
-            if ($authContext === null)
-                throw new AppHttpException(HTTP_NOT_LOGGED_IN);
-            if ($authContext['role'] !== 'ADMIN')
-                throw new AppHttpException(HTTP_NOT_AUTHORIZED);
-        }
-
         if ($newUser->role === 'OWNER' && is_null($newUser->shopId)) {
             // Owners must have a shop ID
             throw new AppHttpException(HTTP_BAD_REQUEST, 'Missing shop ID');

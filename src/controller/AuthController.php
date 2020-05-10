@@ -29,6 +29,7 @@ class AuthController extends BaseController {
         $this->authService = $authService;
         $this->registerRoute('/auth/login', 'POST', null, 'login');
         $this->registerRoute('/auth/logout', 'GET', '*', 'logout');
+        $this->registerRoute('/auth/signup', 'POST', null, 'signUp');
     }
 
     public function login(UserLogin $userLogin): AuthResponse {
@@ -39,6 +40,11 @@ class AuthController extends BaseController {
         // Invalidate current session
         $accessToken = AuthService::getAuthContext()['accessToken'];
         $this->authService->logout($accessToken);
+    }
+
+    public function signUp(NewSimpleUser $user) {
+        $id = $this->userDao->insertNewSimpleUser($user);
+        return new UserDetails($this->userDao->getUserById($id));
     }
 }
 
