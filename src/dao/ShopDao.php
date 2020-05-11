@@ -105,16 +105,15 @@ class ShopDao extends Dao {
     public function findShops(float $fromLat, float $fromLon, int $userId, string $query = ''): array {
         $sql = "
         SELECT *, 
-               DISTANCE_KM(?, ?, longitude, latitude) AS distance,
-               IF(Favourites.userId IS NULL, FALSE, TRUE) AS isFavourite
+               DISTANCE_KM(?, ?, latitude, longitude) AS distance,
+               IF(Favourites.userId = ?, TRUE, FALSE) AS isFavourite
         FROM ShopWithCount
         LEFT JOIN Favourites ON ShopWithCount.id = Favourites.shopId
-        WHERE (Favourites.userId = ? OR Favourites.userId IS NULL)
-            AND name LIKE ?
+        WHERE name LIKE ?
         ORDER BY distance
         LIMIT ?
         ";
 
-        return $this->query($sql, [$fromLon, $fromLat, $userId, "%$query%", PAGINATION_PAGE_SIZE]);
+        return $this->query($sql, [$fromLat, $fromLon, $userId, "%$query%", PAGINATION_PAGE_SIZE]);
     }
 }
