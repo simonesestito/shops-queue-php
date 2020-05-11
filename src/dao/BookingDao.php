@@ -40,6 +40,21 @@ class BookingDao extends Dao {
     }
 
     /**
+     * Get the first bookings from the queue of a shop
+     * @param int $shopId
+     * @param array $positions An array with the positions in the queue to return
+     * @return array BookingDetailQueueCount records
+     */
+    public function getFirstBookingsForShop(int $shopId, array $positions) {
+        $arrayTemplate = arraySqlArg(count($positions));
+        $args = array_merge([$shopId], $positions);
+        return $this->query("SELECT *
+                                    FROM BookingDetailQueueCount
+                                    WHERE bookingShopId = ?
+                                    AND queueCount IN $arrayTemplate", $args);
+    }
+
+    /**
      * Add a new booking to the selected shop,
      * assuming the current timestamp as the creation date
      * @param int $userId
@@ -56,10 +71,10 @@ class BookingDao extends Dao {
     /**
      * Get a booking with thr given ID
      * @param int $id Booking ID
-     * @return array|null BookingDetail single record or null
+     * @return array|null BookingDetailQueueCount single record or null
      */
     public function getBookingById(int $id) {
-        $result = $this->query("SELECT * FROM BookingDetail WHERE bookingId = ?", [$id]);
+        $result = $this->query("SELECT * FROM BookingDetailQueueCount WHERE bookingId = ?", [$id]);
         return @$result[0];
     }
 
@@ -84,10 +99,8 @@ class BookingDao extends Dao {
      * Get and remove from the queue, the next user waiting for his turn
      * It will only work if the current user is the shop owner of that shop
      * @param int $shopId
-     * @param int $ownerId Current user which will be verified to be the owner
-     * @return array|null Removed BookingDetail record or null
      */
-    public function popShopQueueForOwner(int $shopId, int $ownerId) {
+    public function popShopQueue(int $shopId) {
         // Lock table to prevent concurrency issues
         try {
             $this->query("LOCK TABLES Booking WRITE");
@@ -96,20 +109,16 @@ class BookingDao extends Dao {
 
         try {
             // Join with User to know who is the owner of this shop
-            $usersResult = $this->query(
-                "SELECT BookingDetail.*
+            $results = $this->query(
+                "SELECT bookingId
                     FROM BookingDetail
                     JOIN User ON User.shopId = BookingDetail.bookingShopId
                     WHERE bookingShopId = ?
-                    AND User.id = ?
-                    LIMIT 1", [$shopId, $ownerId]);
+                    ORDER BY createdAt
+                    LIMIT 1", [$shopId]);
 
-            if (empty($usersResult))
-                return null;
-
-            $nextUser = $usersResult[0];
-            $this->query("DELETE FROM Booking WHERE id = ?", [$nextUser['bookingId']]);
-            return $nextUser;
+            if (!empty($results))
+                $this->query("DELETE FROM Booking WHERE id = ?", [$results[0]['bookingId']]);
         } finally {
             try {
                 $this->query("UNLOCK TABLES");

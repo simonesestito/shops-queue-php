@@ -169,7 +169,7 @@ FROM BookingDetail
                     GROUP BY Booking.userId, Booking.shopId) BookingQueueCount
                    ON BookingQueueCount.shopId = BookingDetail.bookingShopId
                        AND BookingQueueCount.userId = BookingDetail.userId
-ORDER BY BookingDetail.createdAt;
+ORDER BY queueCount;
 
 DROP VIEW IF EXISTS SessionDetail;
 CREATE VIEW SessionDetail AS

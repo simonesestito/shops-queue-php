@@ -59,8 +59,11 @@ class FcmService {
             'Content-Type: application/json',
         ];
         $body = json_encode([
-            'type' => $messageType,
-            'data' => $messageData,
+            'to' => $token,
+            'data' => [
+                'type' => $messageType,
+                'data' => $messageData,
+            ],
         ]);
 
         $ch = curl_init();

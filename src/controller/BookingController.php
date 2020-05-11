@@ -17,11 +17,15 @@
  * along with Shops Queue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+define('BOOKING_NOTIFICATIONS_POSITIONS', [5, 3, 1, 0]);
+
 class BookingController extends BaseController {
     private $bookingDao;
+    private $fcmService;
 
-    public function __construct(BookingDao $bookingDao) {
+    public function __construct(BookingDao $bookingDao, FcmService $fcmService) {
         $this->bookingDao = $bookingDao;
+        $this->fcmService = $fcmService;
         $this->registerRoute('/shops/:shopId/bookings', 'POST', 'USER', 'addBookingToShop');
         $this->registerRoute('/shops/:shopId/bookings', 'GET', '*', 'getBookingsByShop');
         $this->registerRoute('/shops/:shopId/bookings', 'DELETE', 'OWNER', 'deleteBookingsByShop');
@@ -40,8 +44,11 @@ class BookingController extends BaseController {
         $userId = AuthService::getAuthContext()['id'];
         $bookingId = $this->bookingDao->addNewUserBooking($userId, $shopId);
         $entity = $this->bookingDao->getBookingById($bookingId);
-
-        return new Booking($entity);
+        $bookingObject = new BookingQueueCount($entity);
+        if ($bookingObject->queueCount === 0) {
+            $this->fcmService->sendPayloadToUser($userId, FCM_TYPE_QUEUE_NOTICE, $bookingObject);
+        }
+        return $bookingObject;
     }
 
     /**
@@ -93,13 +100,30 @@ class BookingController extends BaseController {
     /**
      * Delete a booking by its ID, if authorized
      * @param $id int Booking ID
+     * @throws AppHttpException
      */
     public function deleteBooking(int $id) {
+        $booking = $this->bookingDao->getBookingById($id);
         $authContext = AuthService::getAuthContext();
-        if ($authContext['role'] === 'ADMIN')
+        if ($booking !== null &&
+            $authContext['role'] === 'ADMIN' ||
+            $booking['userId'] === $authContext['id']) {
             $this->bookingDao->deleteBookingById($id);
-        else
-            $this->bookingDao->deleteBookingByIdForUser($authContext['id'], $id);
+        } else {
+            throw new AppHttpException(HTTP_NOT_AUTHORIZED);
+        }
+
+        $this->sendNotificationsToQueue($booking['bookingShopId']);
+    }
+
+    private function sendNotificationsToQueue(int $shopId) {
+        $bookingsToNotify = $this->bookingDao
+            ->getFirstBookingsForShop($shopId, BOOKING_NOTIFICATIONS_POSITIONS);
+        foreach ($bookingsToNotify as $item) {
+            $bookingToNotify = new BookingQueueCount($item);
+            $userToNotify = $bookingToNotify->user->id;
+            $this->fcmService->sendPayloadToUser($userToNotify, FCM_TYPE_QUEUE_NOTICE, $bookingToNotify);
+        }
     }
 
     /**
@@ -108,18 +132,23 @@ class BookingController extends BaseController {
      * NOTE: This method returns null if there's no one in the queue
      * A client must be aware of this.
      *
-     * @param $id int Shop ID
-     * @return Booking|null
+     * @param int $shopId
+     * @return Booking[] Updated queue
+     * @throws AppHttpException
      */
-    public function callNextUser(int $id) {
-        $calledUser = $this->bookingDao->popShopQueueForOwner($id, AuthService::getAuthContext()['id']);
-        if ($calledUser === null)
-            // No users in the queue
-            return null;
+    public function callNextUser(int $shopId) {
+        if ($shopId !== AuthService::getAuthContext()['shopId']) {
+            throw new AppHttpException(HTTP_NOT_AUTHORIZED);
+        }
 
-        // TODO: Send notification to users
+        $this->sendNotificationsToQueue($shopId);
 
-        return new Booking($calledUser);
+        $this->bookingDao->popShopQueue($shopId);
+
+        $updatedQueue = $this->bookingDao->getBookingsByShopId($shopId);
+        return array_map(function ($entity) {
+            return new Booking($entity);
+        }, $updatedQueue);
     }
 
     /**
@@ -128,11 +157,17 @@ class BookingController extends BaseController {
      * @throws AppHttpException
      */
     public function deleteBookingsByShop(int $shopId) {
-        $authShopId = AuthService::getAuthContext()['shopId'];
-        if ($shopId !== $authShopId)
+        if ($shopId !== AuthService::getAuthContext()['shopId']) {
             throw new AppHttpException(HTTP_NOT_AUTHORIZED);
+        }
 
-        // TODO: Send notification to users
+        // Send a notification to involved users
+        $bookingsToNotify = $this->bookingDao->getBookingsByShopId($shopId);
+        foreach ($bookingsToNotify as $item) {
+            $bookingToNotify = new Booking($item);
+            $userToNotify = $bookingToNotify->user->id;
+            $this->fcmService->sendPayloadToUser($userToNotify, FCM_TYPE_BOOKING_CANCELLED, $bookingToNotify);
+        }
 
         $this->bookingDao->deleteBookingsByShop($shopId);
     }

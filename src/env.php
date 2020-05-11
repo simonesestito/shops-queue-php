@@ -22,7 +22,7 @@
  * This file specifically contains dev env variables
  */
 
-$envs = getenv(null, true);
+$envs = getenv();
 
 define('DB_HOST', $envs['SHOPS_QUEUE_DB_HOST'] ?? 'localhost');
 define('DB_USERNAME', $envs['SHOPS_QUEUE_DB_USERNAME'] ?? 'root');

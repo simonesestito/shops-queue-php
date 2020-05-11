@@ -133,7 +133,9 @@ function handleHttpRequest($url) {
         } elseif ($authRequired !== NULL) {
             // Specific login required
             $userRole = AuthService::getAuthContext()['role'];
-            if ($authRequired !== $userRole) {
+            if ($userRole == null) {
+                throw new AppHttpException(HTTP_NOT_LOGGED_IN);
+            } elseif ($authRequired !== $userRole) {
                 $errorMessage = "Required role: $authRequired, detected role: $userRole";
                 throw new AppHttpException(HTTP_NOT_AUTHORIZED, $errorMessage);
             }

@@ -23,7 +23,7 @@ class Shop {
     public $latitude;
     public $address;
     public $name;
-    public $count;
+    public $count; // How many people there are in the queue
 
     /**
      * Create an instance of ShopWithCount from a DB result

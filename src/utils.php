@@ -92,3 +92,8 @@ function getBearerToken() {
     }
     return null;
 }
+
+function arraySqlArg(int $count) {
+    $placeholders = array_fill(0, $count, '?');
+    return '(' . implode(',', $placeholders) . ')';
+}

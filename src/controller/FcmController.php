@@ -18,10 +18,10 @@
  */
 
 class FcmController extends BaseController {
-    private $fcmDao;
+    private $fcmService;
 
-    public function __construct(FcmDao $fcmDao) {
-        $this->fcmDao = $fcmDao;
+    public function __construct(FcmService $fcmService) {
+        $this->fcmService = $fcmService;
         $this->registerRoute('/users/me/fcm', 'POST', '*', 'addFcmToken');
     }
 
@@ -31,11 +31,7 @@ class FcmController extends BaseController {
      */
     public function addFcmToken(FcmToken $fcmToken) {
         $userId = AuthService::getAuthContext()['id'];
-
-        // Delete token if already assigned (maybe to another user)
-        $this->fcmDao->deleteToken($fcmToken->token);
-
-        $this->fcmDao->addToken($userId, $fcmToken->token);
+        $this->fcmService->setOrReplaceToken($userId, $fcmToken->token);
     }
 }
 
