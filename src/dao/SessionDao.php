@@ -61,4 +61,8 @@ class SessionDao extends Dao {
     public function removeSessionByAccessToken(string $accessToken) {
         $this->query("DELETE FROM Session WHERE accessToken = ?", [$accessToken]);
     }
+
+    public function updateLastUsageDate(int $sessionId) {
+        $this->query("UPDATE Session SET lastUsageDate = NOW() WHERE id = ?", [$sessionId]);
+    }
 }

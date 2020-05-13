@@ -79,6 +79,10 @@ class AuthService {
             return null;
         }
 
+        // Update last usage date on this access token
+        $sessionId = $sessionInfo['sessionId'];
+        $this->sessionDao->updateLastUsageDate($sessionId);
+
         return $sessionInfo;
     }
 
