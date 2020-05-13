@@ -31,18 +31,21 @@ class SessionDao extends Dao {
 
         return $this->query($sql, [
             $sessionData['userId'],
-            $sessionData['accessToken']
+            $sessionData['accessToken'],
         ]);
     }
 
     /**
-     * Get a session
-     * @param int $id
-     * @return array|null Found session with details
+     * Get all user's sessions
+     * @param int $userId
+     * @return array Found sessions with details
      */
-    public function getSessionById(int $id) {
-        $records = $this->query("SELECT * FROM SessionDetail WHERE sessionId = ?", [$id]);
-        return @$records[0];
+    public function getSessionsByUserId(int $userId) {
+        return $this->query("SELECT * FROM SessionDetail WHERE id = ?", [$userId]);
+    }
+
+    public function revokeUserSession(int $userId, int $sessionId) {
+        $this->query("DELETE FROM Session WHERE userId = ? AND id = ?", [$userId, $sessionId]);
     }
 
     /**

@@ -77,9 +77,11 @@ CREATE TABLE Booking
 DROP TABLE IF EXISTS Session;
 CREATE TABLE Session
 (
-    id          INT                NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    userId      INT                NOT NULL,
-    accessToken VARCHAR(88) BINARY NOT NULL,
+    id            INT                NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    userId        INT                NOT NULL,
+    accessToken   VARCHAR(88) BINARY NOT NULL,
+    loginDate     DATETIME           NOT NULL DEFAULT NOW(),
+    lastUsageDate DATETIME           NOT NULL DEFAULT NOW(),
     -- Ensure a token cannot be used by more than 1 user,
     -- even if that's almost impossible, but not 100% impossible
     UNIQUE (accessToken),
@@ -175,6 +177,8 @@ DROP VIEW IF EXISTS SessionDetail;
 CREATE VIEW SessionDetail AS
 SELECT Session.id AS sessionId,
        Session.accessToken,
+       Session.lastUsageDate,
+       Session.loginDate,
        UserDetails.*
 FROM Session
          JOIN UserDetails ON Session.userId = UserDetails.id;
