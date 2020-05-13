@@ -144,6 +144,32 @@ class UserDao extends Dao {
     }
 
     /**
+     * Update a simple user
+     * @param int $id User ID
+     * @param SimpleUserUpdate $update
+     * @noinspection SqlWithoutWhere
+     */
+    public function updateSimpleUser(int $id, SimpleUserUpdate $update) {
+        $sql = "UPDATE User
+        SET name = ?,
+        surname = ?,
+        email = ?";
+        $params = [$update->name, $update->surname, $update->email];
+
+        // Handle password edit
+        if ($update->password !== null) {
+            $update->password = password_hash($update->password, PASSWORD_BCRYPT);
+            $sql .= ", password = ?";
+            $params[] = $update->password;
+        }
+
+        $sql .= " WHERE id = ?";
+        $params[] = $id;
+
+        $this->query($sql, $params);
+    }
+
+    /**
      * Find the ID of the given role
      * @param string $role
      * @return int

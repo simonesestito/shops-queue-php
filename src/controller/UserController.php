@@ -27,6 +27,7 @@ class UserController extends BaseController {
         $this->registerRoute('/users', 'GET', 'ADMIN', 'listUsers');
         $this->registerRoute('/users', 'POST', 'ADMIN', 'signupUser');
         $this->registerRoute('/users/me', 'GET', '*', 'getCurrentUser');
+        $this->registerRoute('/users/me', 'PUT', '*', 'updateCurrentUser');
         $this->registerRoute('/users/:id', 'GET', '*', 'getUserById');
         $this->registerRoute('/users/:id', 'DELETE', 'ADMIN', 'deleteUser');
         $this->registerRoute('/users/:id', 'PUT', 'ADMIN', 'updateUser');
@@ -127,6 +128,17 @@ class UserController extends BaseController {
         }
 
         $this->userDao->updateUser($id, $update);
+        return new UserDetails($this->userDao->getUserById($id));
+    }
+
+    /**
+     * Update the current user
+     * @param SimpleUserUpdate $update
+     * @return UserDetails Updated user
+     */
+    public function updateCurrentUser(SimpleUserUpdate $update) {
+        $id = AuthService::getAuthContext()['id'];
+        $this->userDao->updateSimpleUser($id, $update);
         return new UserDetails($this->userDao->getUserById($id));
     }
 }

@@ -17,25 +17,25 @@
  * along with Shops Queue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class UserUpdate extends SimpleUserUpdate {
-    public $shopId;
-    public $role;
+class SimpleUserUpdate {
+    public $name;
+    public $surname;
+    public $email;
+    public $password;
 
-    /**
-     * UserUpdate constructor.
-     * @param $rawArray array The same as {@link NewUser} but password is optional
-     */
     public function __construct($rawArray) {
-        parent::__construct($rawArray);
         /** @var $validator Validator */
         $validator = getInstanceOf(Validator::class);
         $validator->validate([
-            // Optional. It's assigned when creating a shop owner account
-            'shopId' => Validator::optional('is_int'),
-            'role' => Validator::isIn(DB_USER_ROLES),
+            'name' => Validator::isString(3),
+            'surname' => Validator::isString(3),
+            'email' => Validator::filterAs(FILTER_VALIDATE_EMAIL),
+            'password' => Validator::optional(Validator::isString(8)),
         ], $rawArray);
 
-        $this->shopId = $rawArray['shopId'];
-        $this->role = is_null($rawArray['role']) ? 'USER' : $rawArray['role'];
+        $this->name = $rawArray['name'];
+        $this->surname = $rawArray['surname'];
+        $this->email = $rawArray['email'];
+        $this->password = $rawArray['password'];
     }
 }
