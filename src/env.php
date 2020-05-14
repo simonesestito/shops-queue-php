@@ -29,3 +29,6 @@ define('DB_USERNAME', $envs['SHOPS_QUEUE_DB_USERNAME'] ?? 'root');
 define('DB_PASSWORD', $envs['SHOPS_QUEUE_DB_PASSWORD'] ?? 'root');
 define('DB_NAME', $envs['SHOPS_QUEUE_DB_NAME'] ?? 'shops_queue');
 define('FCM_SERVER_KEY', $envs['SHOPS_QUEUE_FCM_SERVER_KEY'] ?? '');
+define('SENDGRID_API_KEY', $envs['SHOPS_QUEUE_SENDGRID_API_KEY'] ?? '');
+define('SENDGRID_TEMPLATE_ID', $envs['SHOPS_QUEUE_SENDGRID_TEMPLATE_ID'] ?? '');
+define('SENDGRID_FROM_EMAIL', $envs['SHOPS_QUEUE_SENDGRID_FROM_EMAIL'] ?? '');

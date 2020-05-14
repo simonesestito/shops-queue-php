@@ -53,6 +53,8 @@ CREATE TABLE User
     password VARCHAR(60)  NOT NULL,
     roleId   INT          NOT NULL DEFAULT 1,
     shopId   INT                   DEFAULT NULL,
+    -- Email verification code
+    verificationCode VARCHAR(64),
     UNIQUE (email),
     FOREIGN KEY (roleID) REFERENCES Role (id)
         ON UPDATE CASCADE ON DELETE CASCADE,

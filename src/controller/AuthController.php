@@ -23,10 +23,12 @@ require_once __DIR__ . '/BaseController.php';
 class AuthController extends BaseController {
     private $userDao;
     private $authService;
+    private $emailService;
 
-    public function __construct(UserDao $userDao, AuthService $authService) {
+    public function __construct(UserDao $userDao, AuthService $authService, EmailService $emailService) {
         $this->userDao = $userDao;
         $this->authService = $authService;
+        $this->emailService = $emailService;
         $this->registerRoute('/auth/login', 'POST', null, 'login');
         $this->registerRoute('/auth/logout', 'GET', '*', 'logout');
         $this->registerRoute('/auth/signup', 'POST', null, 'signUp');
@@ -44,6 +46,10 @@ class AuthController extends BaseController {
 
     public function signUp(NewSimpleUser $user) {
         $id = $this->userDao->insertNewSimpleUser($user);
+
+        // Send verification email
+        $this->emailService->sendConfirmationToAddress($user->email);
+        
         return new UserDetails($this->userDao->getUserById($id));
     }
 }

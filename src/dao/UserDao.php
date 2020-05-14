@@ -19,7 +19,8 @@
 
 class UserDao extends Dao {
     /**
-     * Insert a new simple user in the database
+     * Insert a new simple user in the database.
+     * It will be deactivated, and it'll have a verification code associated.
      * @param NewSimpleUser $newUser
      * @return int ID of the newly created user
      */
@@ -168,6 +169,27 @@ class UserDao extends Dao {
         $params[] = $id;
 
         $this->query($sql, $params);
+    }
+
+    /**
+     * Add a verification code to a user
+     * @param int $userId
+     * @param string $verificationCode
+     */
+    public function addVerificationCode($userEmail, $verificationCode) {
+        $this->query("UPDATE User SET verificationCode = ? WHERE email = ?", [$verificationCode, $userEmail]);
+    }
+
+    /**
+     * Validate a user's email
+     * @param int $userEmail
+     * @param string $verificationCode
+     */
+    public function validateEmailByCode($userEmail, $verificationCode) {
+        $this->query("UPDATE User SET verificationCode = NULL, active = true WHERE verificationCode = ? AND email = ?", [
+            $verificationCode,
+            $userEmail
+        ]);
     }
 
     /**
