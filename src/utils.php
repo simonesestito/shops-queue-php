@@ -97,3 +97,20 @@ function arraySqlArg(int $count) {
     $placeholders = array_fill(0, $count, '?');
     return '(' . implode(',', $placeholders) . ')';
 }
+
+function httpPost($url, $headers, $body) {
+    $headers[] = 'Content-Type: application/json';
+    $json = json_encode($body);
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+    $result = curl_exec($ch);
+    if ($result === false)
+        throw new RuntimeException(curl_error($ch));
+
+    return json_decode($result, true);
+}

@@ -54,29 +54,16 @@ class FcmService {
         }
 
         $url = 'https://fcm.googleapis.com/fcm/send';
-        $headers = [
-            'Authorization: key=' . FCM_SERVER_KEY,
-            'Content-Type: application/json',
-        ];
-        $body = json_encode([
+        $headers = [ 'Authorization: key=' . FCM_SERVER_KEY ];
+        $body = [
             'to' => $token,
             'data' => [
                 'type' => $messageType,
                 'data' => $messageData,
             ],
-        ]);
+        ];
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
-        $result = curl_exec($ch);
-        if ($result === false)
-            throw new RuntimeException(curl_error($ch));
-
-        $result = json_decode($result, true);
+        $result = httpPost($url, $headers, $body);
         $sendResults = $result['results'];
         foreach ($sendResults as $sendResult) {
             if (@$sendResult['error'] === 'InvalidRegistration')
