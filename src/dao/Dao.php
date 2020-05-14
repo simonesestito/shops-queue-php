@@ -42,14 +42,15 @@ class Dao {
 
         if (!empty($params)) {
             $types = '';
-            foreach ($params as $param) {
+            foreach ($params as &$param) {
                 if (is_string($param) || $param === null)
                     $types .= 's';
                 elseif (is_int($param))
                     $types .= 'i';
-                elseif (is_bool($param))
-                    $types .= 'b';
-                elseif (is_double($param))
+                elseif (is_bool($param)) {
+                    $types .= 'i';
+                    $param = $param ? 1 : 0;
+                } elseif (is_double($param))
                     $types .= 'd';
                 else
                     throw new RuntimeException("Unknown type for '$param'");
