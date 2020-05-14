@@ -82,7 +82,7 @@ No sensitive information is stored in plain text in the database!
 
 This project has been organized according to the following diagram:
 
-![Architecture diagram](https://github.com/simonesestito/shops-queue-php/blob/master/graphics/architecture.png?raw=true)
+![Architecture diagram](https://github.com/simonesestito/shops-queue-php/blob/master/.github/architecture.png?raw=true)
 
 A Controller receives a request for a specific base URI.
 Each of its methods can be registered to listen on a more specific endpoint. A method can, and often should, return an object. It'll be transformed to JSON and sent to the client.
@@ -117,7 +117,7 @@ Some files or folders may have been omitted
 <a name="database"></a>
 ## Database
 
-![Database tables](https://github.com/simonesestito/shops-queue-php/blob/master/graphics/db_schema.png?raw=true)
+![Database tables](https://github.com/simonesestito/shops-queue-php/blob/master/.github/db.svg?raw=true)
 
 <a name="push"></a>
 ## Push Notifications
