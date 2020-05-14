@@ -25,6 +25,7 @@
 class NewUser extends NewSimpleUser {
     public $shopId;
     public $role;
+    public $active;
 
     public function __construct($rawArray) {
         parent::__construct($rawArray);
@@ -34,9 +35,11 @@ class NewUser extends NewSimpleUser {
             // Optional. It's assigned when creating a shop owner account
             'shopId' => Validator::optional('is_int'),
             'role' => Validator::isIn(DB_USER_ROLES),
+            'active' => 'is_bool',
         ], $rawArray);
 
         $this->shopId = $rawArray['shopId'];
         $this->role = is_null($rawArray['role']) ? 'USER' : $rawArray['role'];
+        $this->active = $rawArray['active'];
     }
 }

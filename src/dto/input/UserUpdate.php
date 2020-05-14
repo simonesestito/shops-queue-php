@@ -20,6 +20,7 @@
 class UserUpdate extends SimpleUserUpdate {
     public $shopId;
     public $role;
+    public $active;
 
     /**
      * UserUpdate constructor.
@@ -33,9 +34,11 @@ class UserUpdate extends SimpleUserUpdate {
             // Optional. It's assigned when creating a shop owner account
             'shopId' => Validator::optional('is_int'),
             'role' => Validator::isIn(DB_USER_ROLES),
+            'active' => 'is_bool',
         ], $rawArray);
 
         $this->shopId = $rawArray['shopId'];
         $this->role = is_null($rawArray['role']) ? 'USER' : $rawArray['role'];
+        $this->active = $rawArray['active'];
     }
 }

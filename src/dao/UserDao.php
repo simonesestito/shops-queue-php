@@ -47,9 +47,10 @@ class UserDao extends Dao {
             password_hash($newUser->password, PASSWORD_BCRYPT),
             $this->getRoleId($newUser->role),
             $newUser->shopId,
+            $newUser->active,
         ];
 
-        $sql = "INSERT INTO User (name, surname, email, password, roleId, shopId, active) VALUES (?, ?, ?, ?, ?, ?, true)";
+        $sql = "INSERT INTO User (name, surname, email, password, roleId, shopId, active) VALUES (?, ?, ?, ?, ?, ?, ?)";
         return $this->query($sql, $params);
     }
 
@@ -128,8 +129,9 @@ class UserDao extends Dao {
         surname = ?,
         email = ?,
         roleId = ?,
-        shopId = ?";
-        $params = [$update->name, $update->surname, $update->email, $roleId, $update->shopId];
+        shopId = ?,
+        active = ?";
+        $params = [$update->name, $update->surname, $update->email, $roleId, $update->shopId, $update->active];
 
         // Handle password edit
         if ($update->password !== null) {
@@ -172,7 +174,7 @@ class UserDao extends Dao {
 
     /**
      * Add a verification code to a user
-     * @param int $userId
+     * @param string $userEmail
      * @param string $verificationCode
      */
     public function addVerificationCode($userEmail, $verificationCode) {
@@ -181,7 +183,7 @@ class UserDao extends Dao {
 
     /**
      * Validate a user's email
-     * @param int $userEmail
+     * @param string $userEmail
      * @param string $verificationCode
      */
     public function validateEmailByCode($userEmail, $verificationCode) {
