@@ -1,4 +1,4 @@
-# Shops Queue (backend)
+# <img src="https://github.com/simonesestito/shops-queue-android/blob/master/.github/app_logo.png" width="64"> Shops Queue (backend)
 
 This repository is part of the **Shops Queue** project.
 
