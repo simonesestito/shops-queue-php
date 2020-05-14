@@ -154,8 +154,7 @@ class UserDao extends Dao {
         $sql = "UPDATE User
         SET name = ?,
         surname = ?,
-        email = ?,
-        active = false";
+        email = ?";
         $params = [$update->name, $update->surname, $update->email];
 
         // Handle password edit
@@ -177,7 +176,7 @@ class UserDao extends Dao {
      * @param string $verificationCode
      */
     public function addVerificationCode($userEmail, $verificationCode) {
-        $this->query("UPDATE User SET verificationCode = ? WHERE email = ?", [$verificationCode, $userEmail]);
+        $this->query("UPDATE User SET verificationCode = ?, active = false WHERE email = ?", [$verificationCode, $userEmail]);
     }
 
     /**

@@ -20,10 +20,12 @@
 class UserController extends BaseController {
     private $userDao;
     private $validator;
+    private $emailService;
 
-    public function __construct(UserDao $userDao, Validator $validator) {
+    public function __construct(UserDao $userDao, Validator $validator, EmailService $emailService) {
         $this->userDao = $userDao;
         $this->validator = $validator;
+        $this->emailService = $emailService;
         $this->registerRoute('/users', 'GET', 'ADMIN', 'listUsers');
         $this->registerRoute('/users', 'POST', 'ADMIN', 'signupUser');
         $this->registerRoute('/users/me', 'GET', '*', 'getCurrentUser');
@@ -138,7 +140,15 @@ class UserController extends BaseController {
      */
     public function updateCurrentUser(SimpleUserUpdate $update) {
         $id = AuthService::getAuthContext()['id'];
+        $oldEmail = AuthService::getAuthContext()['email'];
+
         $this->userDao->updateSimpleUser($id, $update);
+
+        // Deactivate a user when it changes its email address on its own
+        if ($oldEmail !== $update->email) {
+            $this->emailService->sendConfirmationToAddress($update->email);
+        }
+
         return new UserDetails($this->userDao->getUserById($id));
     }
 }
