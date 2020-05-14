@@ -40,6 +40,11 @@ class AuthService {
             throw new LoginException('Wrong email');
         }
 
+        // Check activation status
+        if (!$userEntity['active']) {
+            throw new AppHttpException(HTTP_NOT_AUTHORIZED);
+        }
+
         // Check password
         if (!password_verify($userLogin->password, $userEntity['password'])) {
             throw new LoginException('Wrong password');
@@ -74,7 +79,7 @@ class AuthService {
         // Validate access token
         $hashedToken = base64_encode(hash('sha512', $accessToken, true));
         $sessionInfo = $this->sessionDao->getSessionByAccessToken($hashedToken);
-        if ($sessionInfo == null) {
+        if ($sessionInfo == null || !$sessionInfo['active']) {
             // Invalid access token
             return null;
         }

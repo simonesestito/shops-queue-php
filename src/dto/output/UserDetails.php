@@ -24,6 +24,7 @@
  */
 class UserDetails extends User {
     public $shop;
+    public $active;
 
     /**
      * UserDetails constructor.
@@ -31,6 +32,7 @@ class UserDetails extends User {
      */
     public function __construct(array $entity) {
         parent::__construct($entity);
+        $this->active = $entity['active'] ? true : false;
 
         if ($this->shopId !== null) {
             // Revert SQL aliases

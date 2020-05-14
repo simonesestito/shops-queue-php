@@ -48,6 +48,7 @@ CREATE TABLE User
     surname  VARCHAR(255) NOT NULL,
     -- It can be a commercial email address for operators
     email    VARCHAR(255) NOT NULL,
+    active   BOOLEAN      NOT NULL DEFAULT FALSE,
     -- BCrypt hash length
     password VARCHAR(60)  NOT NULL,
     roleId   INT          NOT NULL DEFAULT 1,

@@ -48,7 +48,7 @@ class UserDao extends Dao {
             $newUser->shopId,
         ];
 
-        $sql = "INSERT INTO User (name, surname, email, password, roleId, shopId) VALUES (?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO User (name, surname, email, password, roleId, shopId, active) VALUES (?, ?, ?, ?, ?, ?, true)";
         return $this->query($sql, $params);
     }
 
@@ -153,7 +153,8 @@ class UserDao extends Dao {
         $sql = "UPDATE User
         SET name = ?,
         surname = ?,
-        email = ?";
+        email = ?,
+        active = false";
         $params = [$update->name, $update->surname, $update->email];
 
         // Handle password edit
