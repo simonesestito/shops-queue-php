@@ -32,6 +32,7 @@ class AuthController extends BaseController {
         $this->registerRoute('/auth/login', 'POST', null, 'login');
         $this->registerRoute('/auth/logout', 'GET', '*', 'logout');
         $this->registerRoute('/auth/signup', 'POST', null, 'signUp');
+        $this->registerRoute('/auth/validate/:email/:code', 'GET', null, 'validateEmail');
     }
 
     public function login(UserLogin $userLogin): AuthResponse {
@@ -51,6 +52,12 @@ class AuthController extends BaseController {
         $this->emailService->sendConfirmationToAddress($user->email);
         
         return new UserDetails($this->userDao->getUserById($id));
+    }
+
+    public function validateEmail($email, $code) {
+        $this->emailService->validateEmailAddress($email, $code);
+        // Open the app via a deep link
+        header('Location: shopsqueue://login/');
     }
 }
 

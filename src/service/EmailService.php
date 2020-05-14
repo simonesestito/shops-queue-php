@@ -58,6 +58,7 @@ class EmailService {
                     ],
                     'dynamic_template_data' => [
                         'name' => $user['name'],
+                        'email' => $emailAddress,
                         'code' => $verificationCode,
                     ],
                 ]
