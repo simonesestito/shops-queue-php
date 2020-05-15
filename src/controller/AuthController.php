@@ -57,7 +57,7 @@ class AuthController extends BaseController {
     public function validateEmail($email, $code) {
         $this->emailService->validateEmailAddress($email, $code);
         // Open the app via a deep link
-        header('Location: shopsqueue://login/');
+        header("Location: shopsqueue://login/$email");
     }
 }
 
