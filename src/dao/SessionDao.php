@@ -41,7 +41,7 @@ class SessionDao extends Dao {
      * @return array Found sessions with details
      */
     public function getSessionsByUserId(int $userId) {
-        return $this->query("SELECT * FROM SessionDetail WHERE id = ?", [$userId]);
+        return $this->query("SELECT * FROM SessionDetail WHERE id = ? ORDER BY lastUsageDate DESC", [$userId]);
     }
 
     public function revokeUserSession(int $userId, int $sessionId) {
