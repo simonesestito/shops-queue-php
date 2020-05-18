@@ -11,6 +11,7 @@ Other related repositories:
 - [Features](#features)
 - [REST API endpoints](#endpoints)
 - [Architecture and project structure](#architecture)
+- [Security and deploy](#deploy)
 - [Database](#database)
 - [Push Notifications](#push)
 - [E-mail verification](#emailcheck)
@@ -95,7 +96,8 @@ A DAO (Data Access Object), as the name implies, it's an object which allows acc
 
 DTOs (Data Transfer Object) represent the data structure of all inputs and outputs of the endpoints.
 
-The main entry point is the `index.php` file. It is responsible for doing all the wrap up logic. It finds the most appropriate Controller, invokes the specific method and sends the response out.
+The main entry point is the [index.php file](https://github.com/simonesestito/shops-queue-php/blob/master/src/index.php).
+It is responsible for doing all the wrap up logic. It finds the most appropriate Controller, invokes the specific method and sends the response out.
 
 A custom-made Dependency Injection system has also been included, which uses PHP reflection, to instantiate classes quickly and easily.
 
@@ -114,6 +116,37 @@ Some files or folders may have been omitted
   - **service** (Services)
   - **env.php** (Environment variables)
 
+<a name="deploy"></a>
+## Security and deploy
+
+The following diagram illustrates how the network has been architected:
+
+![Networking](https://github.com/simonesestito/shops-queue-php/blob/master/.github/network.png?raw=true)
+
+A user who wants to reach the server, will send the request to the **Cloudflare Proxy** first. In turn, it'll send the request to the actual server.
+This extra step prevents the user from knowing the real IP address of the server, since the DNS A record points to Cloudflare, not to the Azure server.
+Also, Cloudflare is often used to mitigate DDoS attacks.
+It also acts as a firewall, dropping SSH connection requests and other things apart from HTTPS requests.
+
+Then, we have the **Azure Firewall**.
+It's configured to allow incoming HTTPS requests from Cloudflare IPs only, and SSH requests from every IP.
+SSH is secured up in other ways. First, you need to discover what the IP of the server is, since Cloudflare blocks SSH requests, and
+you can't discover its IP address from a DNS request.
+
+Most importantly, SSH doesn't allow you authenticating as root.
+You can log in as another user, which requires to use a **4096 bits RSA key** (password authentication has been disabled).
+
+In the diagram you can see **3 different keys and padlocks**.
+
+The **green padlock** is the HTTPS connection to Cloudflare servers. A Cloudflare's provided certificate is used.
+
+The **blue padlock** is the HTTPS connection between Cloudflare servers and the Azure server.
+It uses a valid SSL certificate signed by Let's Encrypt CA.
+
+Finally, the **red key** is used to log in via SSH. It's the RSA key we discussed earlier.
+
+For what concerns Nginx, you can find [its configuration here](https://github.com/simonesestito/shops-queue-php/blob/master/nginx-setup.conf).
+
 <a name="database"></a>
 ## Database
 
@@ -124,7 +157,7 @@ Some files or folders may have been omitted
 
 Push Notifications are used to warn the user about the status of its booking. 2 types of notifications are provided: one about the number of people ahead in the queue, the other one it's about the cancellation of the booking by the shop ownwer.
 
-Technically speaking, push notifications are implemented taking advantage of **FCM (Firebase Cloud Messaging)**.
+Technically speaking, push notifications have been implemented taking advantage of **FCM (Firebase Cloud Messaging)**.
 
 The client app sends to the server its FCM token. It'll be associated to the currently logged in user. If a user has the same token, it is removed from the old user and assigned to the new one.
 
@@ -139,7 +172,7 @@ When a user signs up, its account is in a "deactivated" state. A new verificatio
 
 After that, an email containing the previously generated token is sent to the user's e-mail address. Only when the user clicks on the link in the e-mail, its account will be activated.
 
-To send e-mails, SendGrid is used, which offers a practical REST API.
+To send e-mails, SendGrid has been used, which offers a practical REST API.
 
 **The sending of e-mails is managed by** [EmailService.php](https://github.com/simonesestito/shops-queue-php/blob/master/src/service/EmailService.php)
 
