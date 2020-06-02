@@ -69,22 +69,13 @@ class BookingDao extends Dao {
     }
 
     /**
-     * Get a booking with thr given ID
+     * Get a booking with the given ID
      * @param int $id Booking ID
      * @return array|null BookingDetailQueueCount single record or null
      */
     public function getBookingById(int $id) {
         $result = $this->query("SELECT * FROM BookingDetailQueueCount WHERE bookingId = ?", [$id]);
         return @$result[0];
-    }
-
-    /**
-     * Delete a booking from the database only if the user matches
-     * @param $userId int Expected user who made this booking
-     * @param $id int Booking ID
-     */
-    public function deleteBookingByIdForUser(int $userId, int $id) {
-        $this->query("DELETE FROM Booking WHERE id = ? AND userId = ?", [$id, $userId]);
     }
 
     /**
