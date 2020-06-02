@@ -82,6 +82,16 @@ class Validator {
     }
 
     /**
+     * Check if the given value is a non-empty array
+     * @return callable
+     */
+    public static final function isNonEmptyArray(): callable {
+        return function ($value) {
+            return is_array($value) && count($value) > 0;
+        };
+    }
+
+    /**
      * Check if the given value is a string and it's a valid EAN value
      * It doesn't perform checks against control code (last digit) yet
      * @return callable

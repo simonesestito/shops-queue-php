@@ -228,6 +228,16 @@ SELECT Session.id     AS sessionId,
 FROM Session
          JOIN UserDetails ON Session.userId = UserDetails.id;
 
+DROP VIEW IF EXISTS ShoppingListDetail;
+CREATE VIEW ShoppingListDetail AS
+SELECT ShoppingList.id AS shoppingListId,
+       ShoppingList.createdAt,
+       ShoppingList.userId,
+       Product.*
+FROM ShoppingList
+         JOIN ShoppingList_Products ON ShoppingList.id = ShoppingList_Products.shoppingListId
+         JOIN Product ON ShoppingList_Products.productId = Product.id;
+
 -- Apply the haversine formula to calculate
 -- the distance between 2 points on Earth in KMs
 DROP FUNCTION IF EXISTS DISTANCE_KM;
