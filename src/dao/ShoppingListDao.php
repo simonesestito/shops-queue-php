@@ -18,11 +18,56 @@
  */
 
 class ShoppingListDao extends Dao {
-    public function getListsByUserId() {
-
+    /**
+     * Get an array of ShoppingListDetail grouped by list ID
+     * @param int $userId
+     * @return array
+     */
+    public function getListsByUserId(int $userId) {
+        $results = $this->query("SELECT * FROM ShoppingListDetail WHERE userId = ?", [$userId]);
+        // Group by list ID
+        $lists = [];
+        foreach ($results as $result) {
+            array_push($lists[$result['shoppingListId']], $result);
+        }
+        return array_values($lists);
     }
 
-    public function getListsByUserId() {
+    /**
+     * @param int $userId
+     * @param NewShoppingList $newShoppingList
+     * @return int New list's ID
+     */
+    public function addUserShoppingList(int $userId, NewShoppingList $newShoppingList): int {
+        $listId = $this->query("INSERT INTO ShoppingList (userId) VALUES (?)", [$userId]);
 
+        // Add products
+        $insertQuery = '(?,?)';
+        $args = [$listId, $newShoppingList->productIds[0]];
+        for ($i = 1; $i < count($newShoppingList->productIds); $i++) {
+            $insertQuery .= ',(?, ?)';
+            array_push($args, $listId, $newShoppingList->productIds[$i]);
+        }
+        $sql = "INSERT INTO ShoppingList_Products (shoppingListId, productId) VALUES $insertQuery";
+        $this->query($sql, $args);
+
+        return $listId;
+    }
+
+    /**
+     * Delete a shopping list if exists
+     * @param int $id
+     * @param int $userId
+     */
+    public function deleteShoppingList(int $id, int $userId) {
+        $this->query("DELETE FROM ShoppingList WHERE id = ? AND userId = ?", [$id, $userId]);
+    }
+
+    /**
+     * Set a shopping list as ready
+     * @param int $id
+     */
+    public function prepareShoppingList(int $id) {
+        $this->query("UPDATE ShoppingList SET isReady = TRUE WHERE id = ?", [$id]);
     }
 }
