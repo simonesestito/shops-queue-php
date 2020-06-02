@@ -115,6 +115,39 @@ CREATE TABLE FcmToken
         ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+DROP TABLE IF EXISTS Product;
+CREATE TABLE Product
+(
+    id     INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name   VARCHAR(255) NOT NULL,
+    ean    VARCHAR(13)  NOT NULL,
+    shopId INT          NOT NULL,
+    -- A shop can only use an EAN once
+    UNIQUE (shopId, ean),
+    FOREIGN KEY (shopId) REFERENCES Shop (id)
+        ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+DROP TABLE IF EXISTS ShoppingList;
+CREATE TABLE ShoppingList
+(
+    id        INT      NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    userId    INT      NOT NULL,
+    createdAt DATETIME NOT NULL DEFAULT NOW()
+);
+
+DROP TABLE IF EXISTS ShoppingList_Products;
+CREATE TABLE ShoppingList_Products
+(
+    shoppingListId INT NOT NULL,
+    productId      INT NOT NULL,
+    PRIMARY KEY (shoppingListId, productId),
+    FOREIGN KEY (shoppingListId) REFERENCES ShoppingList (id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (productId) REFERENCES Product (id)
+        ON UPDATE CASCADE ON DELETE CASCADE
+);
+
 SET FOREIGN_KEY_CHECKS = 1;
 
 DROP VIEW IF EXISTS PendingBooking;
