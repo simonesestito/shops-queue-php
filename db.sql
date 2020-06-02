@@ -153,6 +153,7 @@ SELECT Booking.id         AS bookingId,
        UserWithRole.role,
        UserWithRole.email,
        Booking.createdAt,
+       Booking.finished,
        ShopWithCount.name AS shopName,
        ShopWithCount.latitude,
        ShopWithCount.longitude,
@@ -169,9 +170,11 @@ SELECT BookingDetail.*, COALESCE(BookingQueueCount.queueCount, 0) AS queueCount
 FROM BookingDetail
          LEFT JOIN (SELECT Booking.userId, Booking.shopId, COUNT(*) AS queueCount
                     FROM Booking,
-                         (SELECT createdAt, shopId, userId FROM Booking) Booking2
+                         (SELECT createdAt, shopId, userId, finished FROM Booking) Booking2
                     WHERE Booking.shopId = Booking2.shopId
                       AND Booking.createdAt > Booking2.createdAt
+                      AND Booking.finished = FALSE
+                      AND Booking2.finished = FALSE
                     GROUP BY Booking.userId, Booking.shopId) BookingQueueCount
                    ON BookingQueueCount.shopId = BookingDetail.bookingShopId
                        AND BookingQueueCount.userId = BookingDetail.userId
