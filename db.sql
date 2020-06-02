@@ -121,7 +121,7 @@ DROP VIEW IF EXISTS ShopWithCount;
 CREATE VIEW ShopWithCount AS
 SELECT Shop.*, COUNT(Booking.userId) AS count
 FROM Shop
-         LEFT JOIN Booking ON Shop.id = Booking.shopId
+         LEFT JOIN Booking ON Shop.id = Booking.shopId AND Booking.finished = FALSE
 GROUP BY Shop.id;
 
 DROP VIEW IF EXISTS UserWithRole;
