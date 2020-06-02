@@ -70,8 +70,6 @@ CREATE TABLE Booking
     shopId    INT      NOT NULL,
     createdAt DATETIME NOT NULL DEFAULT NOW(),
     finished  BOOLEAN  NOT NULL DEFAULT FALSE,
-    -- Ensure a user can only have one booking per shop
-    UNIQUE (userId, shopId),
     FOREIGN KEY (userId) REFERENCES User (id)
         ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (shopId) REFERENCES Shop (id)
