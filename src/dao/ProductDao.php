@@ -21,9 +21,20 @@ class ProductDao extends Dao {
     /**
      * Get all the products offered by a shop
      * @param int $shopId
+     * @return array
      */
-    public function getProductsByShopId(int $shopId) {
-        // TODO
+    public function getProductsByShopId(int $shopId): array {
+        return $this->query("SELECT * FROM Product WHERE shopId = ?", [$shopId]);
+    }
+
+    /**
+     * Get a product by ID
+     * @param int $productId
+     * @return array|null
+     */
+    public function getProductById(int $productId) {
+        $results = $this->query("SELECT * FROM Product WHERE id = ?", [$productId]);
+        return @$results[0];
     }
 
     /**
@@ -33,25 +44,44 @@ class ProductDao extends Dao {
      * @return int New product's ID
      */
     public function addProduct(int $shopId, NewProduct $newProduct): int {
-        // TODO
+        return $this->query("INSERT INTO Product (name, ean, price, shopId)
+                                    VALUES (?, ?, ?, ?)", [
+            $newProduct->name,
+            $newProduct->ean,
+            $newProduct->price,
+            $shopId
+        ]);
     }
 
     /**
      * Edit an existing product.
-     * User authorization checks must be performed in the Controller layer
      * @param int $productId
+     * @param int $shopId
      * @param NewProduct $newProduct
      */
-    public function editProduct(int $productId, NewProduct $newProduct) {
-        // TODO
+    public function editProduct(int $productId, int $shopId, NewProduct $newProduct) {
+        $this->query("UPDATE Product SET
+        name = ?,
+        ean = ?,
+        price = ?
+        WHERE id = ? AND shopId = ?", [
+            $newProduct->name,
+            $newProduct->ean,
+            $newProduct->price,
+            $productId,
+            $shopId,
+        ]);
     }
 
     /**
      * Delete a product by ID, if it exists
-     * User authorization checks must be performed in the Controller layer
      * @param int $productId
+     * @param int $shopId
      */
-    public function deleteProduct(int $productId) {
-        // TODO
+    public function deleteProduct(int $productId, int $shopId) {
+        $this->query("DELETE FROM Product WHERE id = ? AND shopId = ?", [
+            $productId,
+            $shopId
+        ]);
     }
 }
