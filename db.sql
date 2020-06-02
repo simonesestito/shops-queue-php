@@ -84,6 +84,7 @@ CREATE TABLE Session
     accessToken   VARCHAR(88) BINARY NOT NULL,
     loginDate     DATETIME           NOT NULL DEFAULT NOW(),
     lastUsageDate DATETIME           NOT NULL DEFAULT NOW(),
+    active        BOOLEAN            NOT NULL DEFAULT TRUE,
     -- Ensure a token cannot be used by more than 1 user,
     -- even if that's almost impossible, but not 100% impossible
     UNIQUE (accessToken),
@@ -183,10 +184,11 @@ ORDER BY queueCount;
 
 DROP VIEW IF EXISTS SessionDetail;
 CREATE VIEW SessionDetail AS
-SELECT Session.id AS sessionId,
+SELECT Session.id     AS sessionId,
        Session.accessToken,
        Session.lastUsageDate,
        Session.loginDate,
+       Session.active AS sessionActive,
        UserDetails.*
 FROM Session
          JOIN UserDetails ON Session.userId = UserDetails.id;

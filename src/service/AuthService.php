@@ -97,7 +97,7 @@ class AuthService {
      * @param $accessToken string Access token for the session to invalidate
      */
     public function logout(string $accessToken) {
-        $this->sessionDao->removeSessionByAccessToken($accessToken);
+        $this->sessionDao->revokeSessionByAccessToken($accessToken);
     }
 
 
