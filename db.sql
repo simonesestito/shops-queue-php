@@ -43,16 +43,16 @@ CREATE TABLE Shop
 DROP TABLE IF EXISTS User;
 CREATE TABLE User
 (
-    id       INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    name     VARCHAR(255) NOT NULL,
-    surname  VARCHAR(255) NOT NULL,
+    id               INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name             VARCHAR(255) NOT NULL,
+    surname          VARCHAR(255) NOT NULL,
     -- It can be a commercial email address for operators
-    email    VARCHAR(255) NOT NULL,
-    active   BOOLEAN      NOT NULL DEFAULT FALSE,
+    email            VARCHAR(255) NOT NULL,
+    active           BOOLEAN      NOT NULL DEFAULT FALSE,
     -- BCrypt hash length
-    password VARCHAR(60)  NOT NULL,
-    roleId   INT          NOT NULL DEFAULT 1,
-    shopId   INT                   DEFAULT NULL,
+    password         VARCHAR(60)  NOT NULL,
+    roleId           INT          NOT NULL DEFAULT 1,
+    shopId           INT                   DEFAULT NULL,
     -- Email verification code
     verificationCode VARCHAR(64),
     UNIQUE (email),
@@ -69,6 +69,7 @@ CREATE TABLE Booking
     userId    INT      NOT NULL,
     shopId    INT      NOT NULL,
     createdAt DATETIME NOT NULL DEFAULT NOW(),
+    finished  BOOLEAN  NOT NULL DEFAULT FALSE,
     -- Ensure a user can only have one booking per shop
     UNIQUE (userId, shopId),
     FOREIGN KEY (userId) REFERENCES User (id)
