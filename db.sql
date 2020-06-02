@@ -118,10 +118,11 @@ CREATE TABLE FcmToken
 DROP TABLE IF EXISTS Product;
 CREATE TABLE Product
 (
-    id     INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    name   VARCHAR(255) NOT NULL,
-    ean    VARCHAR(13)  NOT NULL,
-    shopId INT          NOT NULL,
+    id     INT                   NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name   VARCHAR(255)          NOT NULL,
+    ean    VARCHAR(13)           NOT NULL,
+    price  FLOAT(10, 2) UNSIGNED NOT NULL,
+    shopId INT                   NOT NULL,
     -- A shop can only use an EAN once
     UNIQUE (shopId, ean),
     FOREIGN KEY (shopId) REFERENCES Shop (id)
