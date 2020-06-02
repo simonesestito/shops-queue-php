@@ -134,7 +134,8 @@ CREATE TABLE ShoppingList
 (
     id        INT      NOT NULL AUTO_INCREMENT PRIMARY KEY,
     userId    INT      NOT NULL,
-    createdAt DATETIME NOT NULL DEFAULT NOW()
+    createdAt DATETIME NOT NULL DEFAULT NOW(),
+    isReady   BOOLEAN  NOT NULL DEFAULT FALSE
 );
 
 DROP TABLE IF EXISTS ShoppingList_Products;
@@ -233,6 +234,7 @@ CREATE VIEW ShoppingListDetail AS
 SELECT ShoppingList.id AS shoppingListId,
        ShoppingList.createdAt,
        ShoppingList.userId,
+       ShoppingList.isReady,
        Product.*
 FROM ShoppingList
          JOIN ShoppingList_Products ON ShoppingList.id = ShoppingList_Products.shoppingListId
