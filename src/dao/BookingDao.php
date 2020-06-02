@@ -109,7 +109,7 @@ class BookingDao extends Dao {
                     LIMIT 1", [$shopId]);
 
             if (!empty($results))
-                $this->query("DELETE FROM Booking WHERE id = ?", [$results[0]['bookingId']]);
+                $this->query("UPDATE Booking SET finished = TRUE WHERE id = ?", [$results[0]['bookingId']]);
         } finally {
             try {
                 $this->query("UNLOCK TABLES");
