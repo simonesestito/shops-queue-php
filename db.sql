@@ -117,11 +117,17 @@ CREATE TABLE FcmToken
 
 SET FOREIGN_KEY_CHECKS = 1;
 
+DROP VIEW IF EXISTS PendingBooking;
+CREATE VIEW PendingBooking AS
+SELECT *
+FROM Booking
+WHERE finished = FALSE;
+
 DROP VIEW IF EXISTS ShopWithCount;
 CREATE VIEW ShopWithCount AS
-SELECT Shop.*, COUNT(Booking.userId) AS count
+SELECT Shop.*, COUNT(PendingBooking.userId) AS count
 FROM Shop
-         LEFT JOIN Booking ON Shop.id = Booking.shopId AND Booking.finished = FALSE
+         LEFT JOIN PendingBooking ON Shop.id = PendingBooking.shopId
 GROUP BY Shop.id;
 
 DROP VIEW IF EXISTS UserWithRole;
@@ -145,37 +151,34 @@ FROM UserWithRole
 
 DROP VIEW IF EXISTS BookingDetail;
 CREATE VIEW BookingDetail AS
-SELECT Booking.id         AS bookingId,
+SELECT PendingBooking.id  AS bookingId,
        ShopWithCount.id   AS bookingShopId,
        UserWithRole.id    AS userId,
        UserWithRole.name,
        UserWithRole.surname,
        UserWithRole.role,
        UserWithRole.email,
-       Booking.createdAt,
-       Booking.finished,
+       PendingBooking.createdAt,
        ShopWithCount.name AS shopName,
        ShopWithCount.latitude,
        ShopWithCount.longitude,
        ShopWithCount.address,
        ShopWithCount.count
-FROM Booking
-         JOIN UserWithRole ON Booking.userId = UserWithRole.id
-         JOIN ShopWithCount ON Booking.shopId = ShopWithCount.id
-ORDER BY Booking.createdAt;
+FROM PendingBooking
+         JOIN UserWithRole ON PendingBooking.userId = UserWithRole.id
+         JOIN ShopWithCount ON PendingBooking.shopId = ShopWithCount.id
+ORDER BY PendingBooking.createdAt;
 
 DROP VIEW IF EXISTS BookingDetailQueueCount;
 CREATE VIEW BookingDetailQueueCount AS
 SELECT BookingDetail.*, COALESCE(BookingQueueCount.queueCount, 0) AS queueCount
 FROM BookingDetail
-         LEFT JOIN (SELECT Booking.userId, Booking.shopId, COUNT(*) AS queueCount
-                    FROM Booking,
-                         (SELECT createdAt, shopId, userId, finished FROM Booking) Booking2
-                    WHERE Booking.shopId = Booking2.shopId
-                      AND Booking.createdAt > Booking2.createdAt
-                      AND Booking.finished = FALSE
-                      AND Booking2.finished = FALSE
-                    GROUP BY Booking.userId, Booking.shopId) BookingQueueCount
+         LEFT JOIN (SELECT PendingBooking.userId, PendingBooking.shopId, COUNT(*) AS queueCount
+                    FROM PendingBooking,
+                         (SELECT createdAt, shopId, userId FROM PendingBooking) Booking2
+                    WHERE PendingBooking.shopId = Booking2.shopId
+                      AND PendingBooking.createdAt > Booking2.createdAt
+                    GROUP BY PendingBooking.userId, PendingBooking.shopId) BookingQueueCount
                    ON BookingQueueCount.shopId = BookingDetail.bookingShopId
                        AND BookingQueueCount.userId = BookingDetail.userId
 ORDER BY queueCount;
