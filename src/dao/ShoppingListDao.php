@@ -41,6 +41,8 @@ class ShoppingListDao extends Dao {
     public function addUserShoppingList(int $userId, NewShoppingList $newShoppingList): int {
         $listId = $this->query("INSERT INTO ShoppingList (userId) VALUES (?)", [$userId]);
 
+        // TODO: Check that every product is sold by the same shop
+
         // Add products
         $insertQuery = '(?,?)';
         $args = [$listId, $newShoppingList->productIds[0]];
@@ -69,5 +71,15 @@ class ShoppingListDao extends Dao {
      */
     public function prepareShoppingList(int $id) {
         $this->query("UPDATE ShoppingList SET isReady = TRUE WHERE id = ?", [$id]);
+    }
+
+    /**
+     * Get a list by ID
+     * @param int $id
+     * @return array
+     */
+    public function getListById(int $id) {
+        $results = $this->query("SELECT * FROM ShoppingListDetail WHERE shoppingListId = ?", [$id]);
+        return @$results[0];
     }
 }

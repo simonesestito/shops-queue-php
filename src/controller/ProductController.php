@@ -54,11 +54,15 @@ class ProductController extends BaseController {
      * @param int $id
      * @param NewProduct $newProduct
      * @return Product
+     * @throws AppHttpException
      */
     public function editProduct(int $id, NewProduct $newProduct): Product {
         $shopId = AuthService::getAuthContext()['shopId'];
         $this->productDao->editProduct($id, $shopId, $newProduct);
         $newEntity = $this->productDao->getProductById($id);
+        if ($newEntity == null) {
+            throw new AppHttpException(HTTP_NOT_FOUND);
+        }
         return new Product($newEntity);
     }
 
