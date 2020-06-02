@@ -53,6 +53,7 @@ CREATE TABLE User
     password         VARCHAR(60)  NOT NULL,
     roleId           INT          NOT NULL DEFAULT 1,
     shopId           INT                   DEFAULT NULL,
+    signupDate       DATETIME     NOT NULL DEFAULT NOW(),
     -- Email verification code
     verificationCode VARCHAR(64),
     UNIQUE (email),
