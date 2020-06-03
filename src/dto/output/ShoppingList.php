@@ -30,7 +30,7 @@ class ShoppingList {
      */
     public function __construct($rawList) {
         $this->id = $rawList[0]['shoppingListId'];
-        $this->createdAt = $rawList[0]['createdAt'];
+        $this->createdAt = strtotime($rawList[0]['createdAt']) * 1000;
         $this->userId = $rawList[0]['userId'];
 
         $this->products = array_map(function ($product) {
