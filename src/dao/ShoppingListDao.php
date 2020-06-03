@@ -77,7 +77,6 @@ class ShoppingListDao extends Dao {
      * @return array
      */
     public function getListById(int $id) {
-        $results = $this->query("SELECT * FROM ShoppingListDetail WHERE shoppingListId = ?", [$id]);
-        return @$results[0];
+        return $this->query("SELECT * FROM ShoppingListDetail WHERE shoppingListId = ?", [$id]);
     }
 }

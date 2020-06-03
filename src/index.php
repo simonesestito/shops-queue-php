@@ -35,7 +35,7 @@ header('Content-Type: application/json');
 try {
     $result = handleHttpRequest($path);
     echo json_encode($result);
-} catch (Exception $e) {
+} catch (Throwable $e) {
     $appException = AppHttpException::fromException($e);
     http_response_code($appException->getHttpStatus());
     echo json_encode($appException->getErrorObject());
