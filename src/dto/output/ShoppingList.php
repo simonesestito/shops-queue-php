@@ -21,6 +21,7 @@ class ShoppingList {
     public $id;
     public $createdAt;
     public $userId;
+    public $total;
     public $products;
 
     /**
@@ -36,5 +37,10 @@ class ShoppingList {
         $this->products = array_map(function ($product) {
             return new Product($product);
         }, $rawList);
+
+        $this->total = 0.0;
+        foreach ($this->products as $product) {
+            $this->total += $product->price;
+        }
     }
 }
