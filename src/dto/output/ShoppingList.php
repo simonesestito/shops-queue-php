@@ -21,6 +21,7 @@ class ShoppingList {
     public $id;
     public $createdAt;
     public $userId;
+    public $isReady;
     public $total;
     public $products;
 
@@ -33,6 +34,7 @@ class ShoppingList {
         $this->id = $rawList[0]['shoppingListId'];
         $this->createdAt = strtotime($rawList[0]['createdAt']) * 1000;
         $this->userId = $rawList[0]['userId'];
+        $this->isReady = $rawList[0]['isReady'];
 
         $this->products = array_map(function ($product) {
             return new Product($product);
