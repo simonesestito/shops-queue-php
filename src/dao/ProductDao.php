@@ -84,4 +84,14 @@ class ProductDao extends Dao {
             $shopId
         ]);
     }
+
+    /**
+     * Get all the products based on the given IDs
+     * @param array $ids
+     * @return array
+     */
+    public function getProductsByIds(array $ids): array {
+        $arrayTemplate = arraySqlArg(count($ids));
+        return $this->query("SELECT * FROM Product WHERE id IN $arrayTemplate", $ids);
+    }
 }

@@ -19,9 +19,11 @@
 
 class ShoppingListController extends BaseController {
     private $shoppingListDao;
+    private $productDao;
 
-    public function __construct(ShoppingListDao $shoppingListDao) {
+    public function __construct(ShoppingListDao $shoppingListDao, ProductDao $productDao) {
         $this->shoppingListDao = $shoppingListDao;
+        $this->productDao = $productDao;
         $this->registerRoute('/users/me/lists', 'GET', '*', 'getMyLists');
         $this->registerRoute('/lists', 'POST', 'USER', 'addList');
         $this->registerRoute('/lists/:id', 'DELETE', 'USER', 'deleteList');
@@ -44,8 +46,21 @@ class ShoppingListController extends BaseController {
      * Add a new list
      * @param NewShoppingList $newShoppingList
      * @return ShoppingList
+     * @throws AppHttpException
      */
     public function addList(NewShoppingList $newShoppingList) {
+        // Check that every product is sold by the same shop
+        $products = $this->productDao->getProductsByIds($newShoppingList->productIds);
+        if (count($products) != count($newShoppingList->productIds)) {
+            // Some product IDs aren't known
+            throw new AppHttpException(HTTP_NOT_FOUND);
+        }
+        $shopId = $products[0]['shopId'];
+        foreach ($products as $product) {
+            if ($product['shopId'] !== $shopId)
+                throw new AppHttpException(HTTP_BAD_REQUEST);
+        }
+
         $userId = AuthService::getAuthContext()['id'];
         $id = $this->shoppingListDao->addUserShoppingList($userId, $newShoppingList);
         $entity = $this->shoppingListDao->getListById($id);

@@ -41,8 +41,6 @@ class ShoppingListDao extends Dao {
     public function addUserShoppingList(int $userId, NewShoppingList $newShoppingList): int {
         $listId = $this->query("INSERT INTO ShoppingList (userId) VALUES (?)", [$userId]);
 
-        // TODO: Check that every product is sold by the same shop
-
         // Add products
         $insertQuery = '(?,?)';
         $args = [$listId, $newShoppingList->productIds[0]];
