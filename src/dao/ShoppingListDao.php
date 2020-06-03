@@ -28,7 +28,10 @@ class ShoppingListDao extends Dao {
         // Group by list ID
         $lists = [];
         foreach ($results as $result) {
-            array_push($lists[$result['shoppingListId']], $result);
+            $index = $result['shoppingListId'];
+            $list = @$lists[$index] ?? [];
+            array_push($list, $result);
+            $lists[$index] = $list;
         }
         return array_values($lists);
     }
