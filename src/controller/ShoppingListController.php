@@ -83,14 +83,13 @@ class ShoppingListController extends BaseController {
      * @throws AppHttpException
      */
     public function prepareList(int $listId) {
+        $this->shoppingListDao->prepareShoppingList($listId);
+
         $entity = $this->shoppingListDao->getListById($listId);
         if ($entity == null)
             throw new AppHttpException(HTTP_NOT_FOUND);
 
-        if (!$entity['isReady']) {
-            // TODO: Push notification
-            $this->shoppingListDao->prepareShoppingList($listId);
-        }
+        // TODO: Push notification
 
         return new ShoppingList($entity);
     }
