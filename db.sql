@@ -235,10 +235,16 @@ SELECT ShoppingList.id AS shoppingListId,
        ShoppingList.createdAt,
        ShoppingList.userId,
        ShoppingList.isReady,
-       Product.*
+       Product.shopId,
+       Product.id      AS productId,
+       Product.price,
+       Product.ean,
+       Product.name    AS productName,
+       ShopWithCount.*
 FROM ShoppingList
          JOIN ShoppingList_Products ON ShoppingList.id = ShoppingList_Products.shoppingListId
-         JOIN Product ON ShoppingList_Products.productId = Product.id;
+         JOIN Product ON ShoppingList_Products.productId = Product.id
+         JOIN ShopWithCount ON ShopWithCount.id = Product.shopId;
 
 -- Apply the haversine formula to calculate
 -- the distance between 2 points on Earth in KMs

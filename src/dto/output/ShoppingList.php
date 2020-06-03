@@ -22,6 +22,7 @@ class ShoppingList {
     public $createdAt;
     public $userId;
     public $isReady;
+    public $shop;
     public $total;
     public $products;
 
@@ -36,7 +37,13 @@ class ShoppingList {
         $this->userId = $rawList[0]['userId'];
         $this->isReady = $rawList[0]['isReady'] ? true : false;
 
+        // No field names in conflict
+        $this->shop = new Shop($rawList[0]);
+
         $this->products = array_map(function ($product) {
+            // Undo aliases
+            $product['id'] = $product['productId'];
+            $product['name'] = $product['productName'];
             return new Product($product);
         }, $rawList);
 
