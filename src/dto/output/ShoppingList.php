@@ -21,6 +21,7 @@ class ShoppingList {
     public $id;
     public $createdAt;
     public $userId;
+    public $userName;
     public $isReady;
     public $shop;
     public $total;
@@ -35,6 +36,7 @@ class ShoppingList {
         $this->id = $rawList[0]['shoppingListId'];
         $this->createdAt = strtotime($rawList[0]['createdAt']) * 1000;
         $this->userId = $rawList[0]['userId'];
+        $this->userName = $rawList[0]['userName'];
         $this->isReady = $rawList[0]['isReady'] ? true : false;
 
         // No field names in conflict

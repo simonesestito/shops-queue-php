@@ -231,20 +231,22 @@ FROM Session
 
 DROP VIEW IF EXISTS ShoppingListDetail;
 CREATE VIEW ShoppingListDetail AS
-SELECT ShoppingList.id AS shoppingListId,
+SELECT ShoppingList.id   AS shoppingListId,
        ShoppingList.createdAt,
        ShoppingList.userId,
        ShoppingList.isReady,
        Product.shopId,
-       Product.id      AS productId,
+       Product.id        AS productId,
        Product.price,
        Product.ean,
-       Product.name    AS productName,
-       ShopWithCount.*
+       Product.name      AS productName,
+       ShopWithCount.*,
+       UserWithRole.name AS userName
 FROM ShoppingList
          JOIN ShoppingList_Products ON ShoppingList.id = ShoppingList_Products.shoppingListId
          JOIN Product ON ShoppingList_Products.productId = Product.id
-         JOIN ShopWithCount ON ShopWithCount.id = Product.shopId;
+         JOIN ShopWithCount ON ShopWithCount.id = Product.shopId
+         JOIN UserWithRole ON UserWithRole.id = ShoppingList.userId;
 
 -- Apply the haversine formula to calculate
 -- the distance between 2 points on Earth in KMs
