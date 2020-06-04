@@ -24,6 +24,7 @@ class ProductController extends BaseController {
         $this->productDao = $productDao;
         $this->registerRoute('/shops/:id/products', 'GET', '*', 'getShopProducts');
         $this->registerRoute('/products', 'POST', 'OWNER', 'addShopProduct');
+        $this->registerRoute('/products/:id', 'GET', '*', 'getProduct');
         $this->registerRoute('/products/:id', 'PUT', 'OWNER', 'editProduct');
         $this->registerRoute('/products/:id', 'DELETE', 'OWNER', 'deleteProduct');
     }
@@ -47,6 +48,18 @@ class ProductController extends BaseController {
         $shopId = AuthService::getAuthContext()['shopId'];
         $id = $this->productDao->addProduct($shopId, $newProduct);
         $entity = $this->productDao->getProductById($id);
+        return new Product($entity);
+    }
+
+    /**
+     * @param int $id
+     * @return Product
+     * @throws AppHttpException
+     */
+    public function getProduct(int $id) {
+        $entity = $this->productDao->getProductById($id);
+        if ($entity == null)
+            throw new AppHttpException(HTTP_NOT_FOUND);
         return new Product($entity);
     }
 
