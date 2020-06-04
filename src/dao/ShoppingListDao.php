@@ -24,7 +24,7 @@ class ShoppingListDao extends Dao {
      * @return array
      */
     public function getListsByUserId(int $userId) {
-        $results = $this->query("SELECT * FROM ShoppingListDetail WHERE userId = ? AND isReady = FALSE", [$userId]);
+        $results = $this->query("SELECT * FROM ShoppingListDetail WHERE userId = ?", [$userId]);
         // Group by list ID
         $lists = [];
         foreach ($results as $result) {
