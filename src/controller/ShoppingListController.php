@@ -26,7 +26,7 @@ class ShoppingListController extends BaseController {
         $this->productDao = $productDao;
         $this->registerRoute('/users/me/lists', 'GET', '*', 'getMyLists');
         $this->registerRoute('/lists', 'POST', 'USER', 'addList');
-        $this->registerRoute('/lists/:id', 'DELETE', 'USER', 'deleteList');
+        $this->registerRoute('/lists/:id', 'DELETE', '*', 'deleteList');
         $this->registerRoute('/lists/:id', 'POST', 'OWNER', 'prepareList');
     }
 
@@ -70,10 +70,28 @@ class ShoppingListController extends BaseController {
     /**
      * Delete a list created by the current user
      * @param int $listId
+     * @throws AppHttpException
      */
     public function deleteList(int $listId) {
-        $userId = AuthService::getAuthContext()['id'];
-        $this->shoppingListDao->deleteShoppingList($listId, $userId);
+        $authContext = AuthService::getAuthContext();
+        $userId = $authContext['id'];
+        $userRole = $authContext['role'];
+        $userShopId = $authContext['shopId'];
+
+        $shoppingList = $this->shoppingListDao->getListById($listId);
+        if ($shoppingList == null)
+            throw new AppHttpException(HTTP_NOT_FOUND);
+
+        if ($shoppingList[0]['userId'] == $userId) {
+            $this->shoppingListDao->deleteShoppingList($listId);
+        } elseif ($userRole == 'OWNER' && $shoppingList[0]['shopId'] == $userShopId) {
+            if (!$shoppingList[0]['isReady']) {
+                // TODO: push notification
+            }
+            $this->shoppingListDao->deleteShoppingList($listId);
+        } else {
+            throw new AppHttpException(HTTP_NOT_AUTHORIZED);
+        }
     }
 
     /**

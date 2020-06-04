@@ -60,10 +60,9 @@ class ShoppingListDao extends Dao {
     /**
      * Delete a shopping list if exists
      * @param int $id
-     * @param int $userId
      */
-    public function deleteShoppingList(int $id, int $userId) {
-        $this->query("DELETE FROM ShoppingList WHERE id = ? AND userId = ?", [$id, $userId]);
+    public function deleteShoppingList(int $id) {
+        $this->query("DELETE FROM ShoppingList WHERE id = ?", [$id]);
     }
 
     /**
