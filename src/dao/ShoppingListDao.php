@@ -25,15 +25,17 @@ class ShoppingListDao extends Dao {
      */
     public function getListsByUserId(int $userId) {
         $results = $this->query("SELECT * FROM ShoppingListDetail WHERE userId = ?", [$userId]);
-        // Group by list ID
-        $lists = [];
-        foreach ($results as $result) {
-            $index = $result['shoppingListId'];
-            $list = @$lists[$index] ?? [];
-            array_push($list, $result);
-            $lists[$index] = $list;
-        }
-        return array_values($lists);
+        return $this->groupResultByListId($results);
+    }
+
+    /**
+     * Get an array of ShoppingListDetail grouped by list ID
+     * @param int $shopId
+     * @return array
+     */
+    public function getListsByShopId(int $shopId) {
+        $results = $this->query("SELECT * FROM ShoppingListDetail WHERE shopId = ?", [$shopId]);
+        return $this->groupResultByListId($results);
     }
 
     /**
@@ -80,5 +82,16 @@ class ShoppingListDao extends Dao {
      */
     public function getListById(int $id) {
         return $this->query("SELECT * FROM ShoppingListDetail WHERE shoppingListId = ?", [$id]);
+    }
+
+    private function groupResultByListId(array $results): array {
+        $lists = [];
+        foreach ($results as $result) {
+            $index = $result['shoppingListId'];
+            $list = @$lists[$index] ?? [];
+            array_push($list, $result);
+            $lists[$index] = $list;
+        }
+        return array_values($lists);
     }
 }

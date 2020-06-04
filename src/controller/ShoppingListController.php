@@ -24,7 +24,8 @@ class ShoppingListController extends BaseController {
     public function __construct(ShoppingListDao $shoppingListDao, ProductDao $productDao) {
         $this->shoppingListDao = $shoppingListDao;
         $this->productDao = $productDao;
-        $this->registerRoute('/users/me/lists', 'GET', '*', 'getMyLists');
+        $this->registerRoute('/users/me/lists', 'GET', 'USER', 'getMyLists');
+        $this->registerRoute('/shops/me/lists', 'GET', 'OWNER', 'getMyShopLists');
         $this->registerRoute('/lists', 'POST', 'USER', 'addList');
         $this->registerRoute('/lists/:id', 'DELETE', '*', 'deleteList');
         $this->registerRoute('/lists/:id', 'POST', 'OWNER', 'prepareList');
@@ -37,6 +38,18 @@ class ShoppingListController extends BaseController {
     public function getMyLists() {
         $userId = AuthService::getAuthContext()['id'];
         $lists = $this->shoppingListDao->getListsByUserId($userId);
+        return array_map(function ($list) {
+            return new ShoppingList($list);
+        }, $lists);
+    }
+
+    /**
+     * Get the lists of the current shop owner
+     * @return ShoppingList[]
+     */
+    public function getMyShopLists() {
+        $shopId = AuthService::getAuthContext()['shopId'];
+        $lists = $this->shoppingListDao->getListsByShopId($shopId);
         return array_map(function ($list) {
             return new ShoppingList($list);
         }, $lists);
