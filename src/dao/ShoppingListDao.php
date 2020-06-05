@@ -24,7 +24,7 @@ class ShoppingListDao extends Dao {
      * @return array
      */
     public function getListsByUserId(int $userId) {
-        $results = $this->query("SELECT * FROM ShoppingListDetail WHERE userId = ?", [$userId]);
+        $results = $this->query("SELECT * FROM ShoppingListDetail WHERE userId = ? ORDER BY isReady DESC", [$userId]);
         return $this->groupResultByListId($results);
     }
 
@@ -34,7 +34,7 @@ class ShoppingListDao extends Dao {
      * @return array
      */
     public function getListsByShopId(int $shopId) {
-        $results = $this->query("SELECT * FROM ShoppingListDetail WHERE shopId = ?", [$shopId]);
+        $results = $this->query("SELECT * FROM ShoppingListDetail WHERE shopId = ? ORDER BY isReady", [$shopId]);
         return $this->groupResultByListId($results);
     }
 
