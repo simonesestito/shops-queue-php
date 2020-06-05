@@ -62,6 +62,15 @@ class BookingDao extends Dao {
      * @return int New booking ID
      */
     public function addNewUserBooking(int $userId, int $shopId) {
+        // Check if there's already another booking by this user on this shop
+        $existing = $this->query("SELECT id FROM Booking WHERE userId = ? AND shopId = ?", [
+            $userId,
+            $shopId
+        ]);
+        if (count($existing) > 0) {
+            throw new DuplicateEntityException();
+        }
+
         return $this->query("INSERT INTO Booking (userId, shopId) VALUES (?, ?)", [
             $userId,
             $shopId
@@ -69,22 +78,13 @@ class BookingDao extends Dao {
     }
 
     /**
-     * Get a booking with thr given ID
+     * Get a booking with the given ID
      * @param int $id Booking ID
      * @return array|null BookingDetailQueueCount single record or null
      */
     public function getBookingById(int $id) {
         $result = $this->query("SELECT * FROM BookingDetailQueueCount WHERE bookingId = ?", [$id]);
         return @$result[0];
-    }
-
-    /**
-     * Delete a booking from the database only if the user matches
-     * @param $userId int Expected user who made this booking
-     * @param $id int Booking ID
-     */
-    public function deleteBookingByIdForUser(int $userId, int $id) {
-        $this->query("DELETE FROM Booking WHERE id = ? AND userId = ?", [$id, $userId]);
     }
 
     /**
@@ -118,7 +118,7 @@ class BookingDao extends Dao {
                     LIMIT 1", [$shopId]);
 
             if (!empty($results))
-                $this->query("DELETE FROM Booking WHERE id = ?", [$results[0]['bookingId']]);
+                $this->query("UPDATE Booking SET finished = TRUE WHERE id = ?", [$results[0]['bookingId']]);
         } finally {
             try {
                 $this->query("UNLOCK TABLES");

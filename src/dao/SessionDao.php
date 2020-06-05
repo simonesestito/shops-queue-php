@@ -41,11 +41,11 @@ class SessionDao extends Dao {
      * @return array Found sessions with details
      */
     public function getSessionsByUserId(int $userId) {
-        return $this->query("SELECT * FROM SessionDetail WHERE id = ? ORDER BY lastUsageDate DESC", [$userId]);
+        return $this->query("SELECT * FROM SessionDetail WHERE id = ? AND sessionActive = TRUE ORDER BY lastUsageDate DESC", [$userId]);
     }
 
     public function revokeUserSession(int $userId, int $sessionId) {
-        $this->query("DELETE FROM Session WHERE userId = ? AND id = ?", [$userId, $sessionId]);
+        $this->query("UPDATE Session SET active = FALSE WHERE userId = ? AND id = ?", [$userId, $sessionId]);
     }
 
     /**
@@ -54,12 +54,12 @@ class SessionDao extends Dao {
      * @return mixed Session record with user and role info
      */
     public function getSessionByAccessToken(string $accessToken) {
-        $records = $this->query("SELECT * FROM SessionDetail WHERE accessToken = ?", [$accessToken]);
+        $records = $this->query("SELECT * FROM SessionDetail WHERE accessToken = ? AND sessionActive = TRUE", [$accessToken]);
         return @$records[0];
     }
 
-    public function removeSessionByAccessToken(string $accessToken) {
-        $this->query("DELETE FROM Session WHERE accessToken = ?", [$accessToken]);
+    public function revokeSessionByAccessToken(string $accessToken) {
+        $this->query("UPDATE Session SET active = FALSE WHERE accessToken = ?", [$accessToken]);
     }
 
     public function updateLastUsageDate(int $sessionId) {

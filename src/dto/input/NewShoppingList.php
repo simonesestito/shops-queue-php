@@ -17,26 +17,16 @@
  * along with Shops Queue.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once __DIR__ . '/utils.php';
-requireAll();
+class NewShoppingList {
+    public $productIds;
 
-// Login the user
-$token = getBearerToken();
-/** @var AuthService $authService */
-$authService = getInstanceOf(AuthService::class);
-$authContext = $authService->createAuthContext($token);
-AuthService::setAuthContext($authContext);
+    public function __construct($rawArray) {
+        /** @var $validator Validator */
+        $validator = getInstanceOf(Validator::class);
+        $validator->validate([
+            'productIds' => Validator::isNonEmptyArray()
+        ], $rawArray);
 
-// Get path without trailing /
-$path = isset($_SERVER['PATH_INFO']) ? rtrim($_SERVER['PATH_INFO'], '/') : '';
-
-header('Content-Type: application/json');
-
-try {
-    $result = handleHttpRequest($path);
-    echo json_encode($result);
-} catch (Throwable $e) {
-    $appException = AppHttpException::fromException($e);
-    http_response_code($appException->getHttpStatus());
-    echo json_encode($appException->getErrorObject());
+        $this->productIds = $rawArray['productIds'];
+    }
 }
