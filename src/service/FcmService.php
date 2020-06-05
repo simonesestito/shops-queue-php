@@ -19,6 +19,8 @@
 
 define('FCM_TYPE_BOOKING_CANCELLED', 'booking-cancelled');
 define('FCM_TYPE_QUEUE_NOTICE', 'queue-notice');
+define('FCM_TYPE_ORDER_READY', 'order-ready');
+define('FCM_TYPE_ORDER_CANCELLED', 'order-cancelled');
 
 class FcmService {
     private $fcmDao;
@@ -48,13 +50,13 @@ class FcmService {
      * @param string $messageType The type of the message (e.g.: booking-cancelled)
      * @param mixed $messageData Data to send
      */
-    public function sendPayloadOrDeleteToken(string $token, string $messageType, $messageData) {
+    private function sendPayloadOrDeleteToken(string $token, string $messageType, $messageData) {
         if (FCM_SERVER_KEY === '') {
             throw new RuntimeException('FCM server key not found in env variables');
         }
 
         $url = 'https://fcm.googleapis.com/fcm/send';
-        $headers = [ 'Authorization: key=' . FCM_SERVER_KEY ];
+        $headers = ['Authorization: key=' . FCM_SERVER_KEY];
         $body = [
             'to' => $token,
             'data' => [

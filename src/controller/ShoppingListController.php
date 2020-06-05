@@ -20,10 +20,12 @@
 class ShoppingListController extends BaseController {
     private $shoppingListDao;
     private $productDao;
+    private $fcmService;
 
-    public function __construct(ShoppingListDao $shoppingListDao, ProductDao $productDao) {
+    public function __construct(ShoppingListDao $shoppingListDao, ProductDao $productDao, FcmService $fcmService) {
         $this->shoppingListDao = $shoppingListDao;
         $this->productDao = $productDao;
+        $this->fcmService = $fcmService;
         $this->registerRoute('/users/me/lists', 'GET', 'USER', 'getMyLists');
         $this->registerRoute('/shops/me/lists', 'GET', 'OWNER', 'getMyShopLists');
         $this->registerRoute('/lists', 'POST', 'USER', 'addList');
@@ -91,15 +93,21 @@ class ShoppingListController extends BaseController {
         $userRole = $authContext['role'];
         $userShopId = $authContext['shopId'];
 
-        $shoppingList = $this->shoppingListDao->getListById($listId);
-        if ($shoppingList == null)
+        $entity = $this->shoppingListDao->getListById($listId);
+        if ($entity == null)
             throw new AppHttpException(HTTP_NOT_FOUND);
+        $shoppingList = new ShoppingList($entity);
 
-        if ($shoppingList[0]['userId'] == $userId) {
+        if ($shoppingList->userId == $userId) {
             $this->shoppingListDao->deleteShoppingList($listId);
-        } elseif ($userRole == 'OWNER' && $shoppingList[0]['shopId'] == $userShopId) {
-            if (!$shoppingList[0]['isReady']) {
-                // TODO: push notification
+        } elseif ($userRole == 'OWNER' && $shoppingList->shop->id == $userShopId) {
+            if (!$shoppingList->isReady) {
+                // Send push notification
+                $this->fcmService->sendPayloadToUser(
+                    $shoppingList->userId,
+                    FCM_TYPE_ORDER_CANCELLED,
+                    $shoppingList
+                );
             }
             $this->shoppingListDao->deleteShoppingList($listId);
         } else {
@@ -120,7 +128,16 @@ class ShoppingListController extends BaseController {
         if ($entity == null)
             throw new AppHttpException(HTTP_NOT_FOUND);
 
-        // TODO: Push notification
+        $shoppingList = new ShoppingList($entity);
+        if ($shoppingList->shop->id != AuthService::getAuthContext()['shopId'])
+            throw new AppHttpException(HTTP_NOT_AUTHORIZED);
+
+        // Send push notification
+        $this->fcmService->sendPayloadToUser(
+            $shoppingList->userId,
+            FCM_TYPE_ORDER_READY,
+            $shoppingList
+        );
 
         return new ShoppingList($entity);
     }
