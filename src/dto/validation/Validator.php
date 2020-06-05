@@ -82,6 +82,36 @@ class Validator {
     }
 
     /**
+     * Check if the given value is a non-empty array
+     * @return callable
+     */
+    public static final function isNonEmptyArray(): callable {
+        return function ($value) {
+            return is_array($value) && count($value) > 0;
+        };
+    }
+
+    /**
+     * Check if the given value is a string and it's a valid EAN value
+     * It doesn't perform checks against control code (last digit) yet
+     * @return callable
+     */
+    public static final function isEan() {
+        return function ($value) {
+            if (!is_string($value))
+                return false;
+
+            if (strlen($value) != 13)
+                return false;
+
+            if (!is_numeric($value))
+                return false;
+
+            return true;
+        };
+    }
+
+    /**
      * Validate a raw array against a schema
      *
      * @param $schema callable[] Excepted data schema

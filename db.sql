@@ -115,6 +115,41 @@ CREATE TABLE FcmToken
         ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+DROP TABLE IF EXISTS Product;
+CREATE TABLE Product
+(
+    id     INT                   NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name   VARCHAR(255)          NOT NULL,
+    ean    VARCHAR(13)           NOT NULL,
+    price  FLOAT(10, 2) UNSIGNED NOT NULL,
+    shopId INT                   NOT NULL,
+    -- A shop can only use an EAN once
+    UNIQUE (shopId, ean),
+    FOREIGN KEY (shopId) REFERENCES Shop (id)
+        ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+DROP TABLE IF EXISTS ShoppingList;
+CREATE TABLE ShoppingList
+(
+    id        INT      NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    userId    INT      NOT NULL,
+    createdAt DATETIME NOT NULL DEFAULT NOW(),
+    isReady   BOOLEAN  NOT NULL DEFAULT FALSE
+);
+
+DROP TABLE IF EXISTS ShoppingList_Products;
+CREATE TABLE ShoppingList_Products
+(
+    shoppingListId INT NOT NULL,
+    productId      INT NOT NULL,
+    PRIMARY KEY (shoppingListId, productId),
+    FOREIGN KEY (shoppingListId) REFERENCES ShoppingList (id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (productId) REFERENCES Product (id)
+        ON UPDATE CASCADE ON DELETE CASCADE
+);
+
 SET FOREIGN_KEY_CHECKS = 1;
 
 DROP VIEW IF EXISTS PendingBooking;
@@ -193,6 +228,25 @@ SELECT Session.id     AS sessionId,
        UserDetails.*
 FROM Session
          JOIN UserDetails ON Session.userId = UserDetails.id;
+
+DROP VIEW IF EXISTS ShoppingListDetail;
+CREATE VIEW ShoppingListDetail AS
+SELECT ShoppingList.id   AS shoppingListId,
+       ShoppingList.createdAt,
+       ShoppingList.userId,
+       ShoppingList.isReady,
+       Product.shopId,
+       Product.id        AS productId,
+       Product.price,
+       Product.ean,
+       Product.name      AS productName,
+       ShopWithCount.*,
+       UserWithRole.name AS userName
+FROM ShoppingList
+         JOIN ShoppingList_Products ON ShoppingList.id = ShoppingList_Products.shoppingListId
+         JOIN Product ON ShoppingList_Products.productId = Product.id
+         JOIN ShopWithCount ON ShopWithCount.id = Product.shopId
+         JOIN UserWithRole ON UserWithRole.id = ShoppingList.userId;
 
 -- Apply the haversine formula to calculate
 -- the distance between 2 points on Earth in KMs
