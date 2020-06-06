@@ -142,10 +142,11 @@ CREATE TABLE Product
 DROP TABLE IF EXISTS ShoppingList;
 CREATE TABLE ShoppingList
 (
-    id        INT      NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    userId    INT      NOT NULL,
-    createdAt DATETIME NOT NULL DEFAULT NOW(),
-    isReady   BOOLEAN  NOT NULL DEFAULT FALSE,
+    id         INT      NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    userId     INT      NOT NULL,
+    createdAt  DATETIME NOT NULL DEFAULT NOW(),
+    isReady    BOOLEAN  NOT NULL DEFAULT FALSE,
+    retireDate DATETIME,
     FOREIGN KEY (userId) REFERENCES User (id)
         ON UPDATE CASCADE ON DELETE CASCADE
 );
@@ -258,7 +259,8 @@ FROM ShoppingList
          JOIN ShoppingList_Products ON ShoppingList.id = ShoppingList_Products.shoppingListId
          JOIN Product ON ShoppingList_Products.productId = Product.id
          JOIN ShopWithCount ON ShopWithCount.id = Product.shopId
-         JOIN UserWithRole ON UserWithRole.id = ShoppingList.userId;
+         JOIN UserWithRole ON UserWithRole.id = ShoppingList.userId
+WHERE ShoppingList.retireDate IS NULL;
 
 -- Apply the haversine formula to calculate
 -- the distance between 2 points on Earth in KMs

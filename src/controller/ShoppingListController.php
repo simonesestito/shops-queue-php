@@ -101,15 +101,18 @@ class ShoppingListController extends BaseController {
         if ($shoppingList->userId == $userId) {
             $this->shoppingListDao->deleteShoppingList($listId);
         } elseif ($userRole == 'OWNER' && $shoppingList->shop->id == $userShopId) {
-            if (!$shoppingList->isReady) {
+            if ($shoppingList->isReady) {
+                // Set as retired
+                $this->shoppingListDao->setListAsRetired($listId);
+            } else {
                 // Send push notification
                 $this->fcmService->sendPayloadToUser(
                     $shoppingList->userId,
                     FCM_TYPE_ORDER_CANCELLED,
                     $shoppingList
                 );
+                $this->shoppingListDao->deleteShoppingList($listId);
             }
-            $this->shoppingListDao->deleteShoppingList($listId);
         } else {
             throw new AppHttpException(HTTP_NOT_AUTHORIZED);
         }

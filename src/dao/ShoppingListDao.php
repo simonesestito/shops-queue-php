@@ -84,6 +84,14 @@ class ShoppingListDao extends Dao {
         return $this->query("SELECT * FROM ShoppingListDetail WHERE shoppingListId = ?", [$id]);
     }
 
+    /**
+     * Set a shopping list as retired by the user
+     * @param int $id
+     */
+    public function setListAsRetired(int $id) {
+        $this->query("UPDATE ShoppingList SET retireDate = NOW() WHERE retireDate IS NULL AND id = ?", [ $id ]);
+    }
+
     private function groupResultByListId(array $results): array {
         $lists = [];
         foreach ($results as $result) {
