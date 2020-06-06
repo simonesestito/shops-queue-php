@@ -29,6 +29,13 @@ VALUES (1, 'USER'),
        (2, 'OWNER'),
        (3, 'ADMIN');
 
+DROP TABLE IF EXISTS City;
+CREATE TABLE City
+(
+    id   INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    city VARCHAR(255) NOT NULL
+);
+
 DROP TABLE IF EXISTS Shop;
 CREATE TABLE Shop
 (
@@ -37,7 +44,10 @@ CREATE TABLE Shop
     latitude  FLOAT(10, 6) NOT NULL,
     longitude FLOAT(10, 6) NOT NULL,
     address   VARCHAR(255) NOT NULL,
-    name VARCHAR(255) NOT NULL
+    name      VARCHAR(255) NOT NULL,
+    cityId    INT          NOT NULL,
+    FOREIGN KEY (cityId) REFERENCES City (id)
+        ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS User;
@@ -57,7 +67,7 @@ CREATE TABLE User
     -- Email verification code
     verificationCode VARCHAR(64),
     UNIQUE (email),
-    FOREIGN KEY (roleID) REFERENCES Role (id)
+    FOREIGN KEY (roleId) REFERENCES Role (id)
         ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (shopId) REFERENCES Shop (id)
         ON UPDATE CASCADE ON DELETE CASCADE
@@ -135,7 +145,9 @@ CREATE TABLE ShoppingList
     id        INT      NOT NULL AUTO_INCREMENT PRIMARY KEY,
     userId    INT      NOT NULL,
     createdAt DATETIME NOT NULL DEFAULT NOW(),
-    isReady   BOOLEAN  NOT NULL DEFAULT FALSE
+    isReady   BOOLEAN  NOT NULL DEFAULT FALSE,
+    FOREIGN KEY (userId) REFERENCES User (id)
+        ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS ShoppingList_Products;
