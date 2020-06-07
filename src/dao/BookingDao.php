@@ -63,7 +63,7 @@ class BookingDao extends Dao {
      */
     public function addNewUserBooking(int $userId, int $shopId) {
         // Check if there's already another booking by this user on this shop
-        $existing = $this->query("SELECT id FROM Booking WHERE userId = ? AND shopId = ?", [
+        $existing = $this->query("SELECT id FROM Booking WHERE userId = ? AND shopId = ? AND finished = FALSE", [
             $userId,
             $shopId
         ]);
