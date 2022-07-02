@@ -1,0 +1,49 @@
+version: '3.4'
+
+services:
+  web:
+    image: nginx:1.18.0-alpine
+    ports:
+      - "${DOCKER_HOST_PROXY_PORT:-8080}:80"
+    depends_on:
+      - php
+    env_file:
+      - .env
+    volumes:
+      - ./src/:/var/www/shopsqueue/html:ro
+      - ./nginx-setup.conf:/etc/nginx/conf.d/default.conf:ro
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 1s
+
+  php:
+    build: .
+    depends_on:
+      - db
+    env_file:
+      - .env
+    volumes:
+      - ./src:/var/www/shopsqueue/html:ro
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 1s
+
+  db:
+    image: "yobasystems/alpine-mariadb:10.6.4"
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./mariadb-app-settings.cnf:/etc/my.cnf.d/mariadb-app-settings.cnf:ro
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 2s
+    environment:
+      MYSQL_ROOT_PASSWORD: "${SHOPS_QUEUE_DB_PASSWORD:-pwd}"
+      MYSQL_DATABASE: "${SHOPS_QUEUE_DB_NAME:-shopsqueue}"
+      MYSQL_USER: "${SHOPS_QUEUE_DB_USERNAME:-shopsqueue}"
+      MYSQL_PASSWORD: "${SHOPS_QUEUE_DB_PASSWORD:-pwd}"
+
+volumes:
+    db-data:

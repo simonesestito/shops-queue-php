@@ -30,6 +30,6 @@ onInit(function () {
     /*
      * Connect to the database
      */
-    $db = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME) or die();
+    $db = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, 3306) or die();
     provideInstance(mysqli::class, $db);
 });

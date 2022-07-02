@@ -52,7 +52,12 @@ class FcmService {
      */
     private function sendPayloadOrDeleteToken(string $token, string $messageType, $messageData) {
         if (FCM_SERVER_KEY === '') {
-            throw new RuntimeException('FCM server key not found in env variables');
+            if (SKIP_EMAIL_VERIFICATION === 'true') {
+                error_log('Skipping FCM payload sending because no FCM key is defined and debug mode is enabled.');
+                return;
+            } else {
+                throw new RuntimeException('FCM server key not found in env variables');
+            }
         }
 
         $url = 'https://fcm.googleapis.com/fcm/send';

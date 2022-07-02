@@ -194,6 +194,16 @@ class UserDao extends Dao {
     }
 
     /**
+     * Validate a user's email without checking the verification code
+     * @param string $userEmail
+     */
+    public function validateEmailWithoutCode($userEmail) {
+        $this->query("UPDATE User SET verificationCode = NULL, active = true WHERE email = ?", [
+            $userEmail
+        ]);
+    }
+
+    /**
      * Find the ID of the given role
      * @param string $role
      * @return int

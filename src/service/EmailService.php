@@ -27,6 +27,15 @@ class EmailService {
     }
 
     public function sendConfirmationToAddress($emailAddress) {
+        if (SKIP_EMAIL_VERIFICATION === 'true'
+            && SENDGRID_API_KEY === ''
+            && SENDGRID_TEMPLATE_ID === ''
+            && SENDGRID_FROM_EMAIL === '') {
+            // Validate user's email directly.
+            $this->userDao->validateEmailWithoutCode($emailAddress);
+            return;
+        }
+
         if (SENDGRID_API_KEY === '') {
             throw new RuntimeException('SendGrid API KEY not found in env variables');
         }
