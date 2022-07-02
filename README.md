@@ -8,6 +8,7 @@ Other related repositories:
 ## Table of contents
 
 - [Introduction](#introduction)
+- [How to run](#execution)
 - [Features](#features)
 - [REST API endpoints](#endpoints)
 - [Architecture and project structure](#architecture)
@@ -26,6 +27,11 @@ This is a project made for my graduation exam.
 In the last year we study PHP, and that's what determined the language to use for the backend.
 
 It was created during Coronavirus lockdown in Italy. The idea came from [a post on Facebook](https://m.facebook.com/story.php?story_fbid=2814783488643375&id=310949775693438) written in March 2020 by the Italian minister of Agricultural, Food and Forestry Policies. It's also inspired by the system most post offices already use to save time.
+
+<a name="execution"></a>
+## How to run
+
+You can find information at https://github.com/simonesestito/shops-queue-php/issues/1#issuecomment-1172880122
 
 <a name="features"></a>
 ## Features
